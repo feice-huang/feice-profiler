@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feice Profiler</title>
+    <title>Feice Profiler Pro</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -109,7 +109,6 @@
             width: 240px;
             transition: all 0.2s;
         }
-        /* 针对 placeholder 进行样式修改，使其默认斜体 */
         #slogan-input::placeholder {
             font-style: italic;
             color: #aaa;
@@ -145,6 +144,7 @@
             font-size: 0.8rem;
         }
         .btn-icon-tool:hover { background: #f5f5f5; }
+        .btn-icon-tool:disabled { color: #ccc; cursor: default; }
 
         /* Paint Tools */
         .paint-wrapper { display: flex; align-items: center; gap: 4px; }
@@ -266,6 +266,11 @@
         </div>
 
         <div class="right-tools">
+            <div id="group-history" class="d-flex gap-1 tool-group-calendar me-2">
+                <button class="btn btn-icon-tool" id="btn-undo" onclick="executeUndo()" title="撤回" disabled><i class="bi bi-arrow-counterclockwise"></i></button>
+                <button class="btn btn-icon-tool" id="btn-redo" onclick="executeRedo()" title="重做" disabled><i class="bi bi-arrow-clockwise"></i></button>
+            </div>
+
             <div id="paint-tools" style="display:none;">
                 <div class="paint-wrapper">
                     <button class="btn btn-icon-tool text-danger border-0" onclick="clearAllPaintOnPage()"><i class="bi bi-eraser-fill"></i></button>
@@ -431,7 +436,7 @@
 
 <script>
     // --- Data & State ---
-    const STORAGE_KEY = 'feiceProfiler_v3'; // Increased version to force new defaults for fresh users
+    const STORAGE_KEY = 'feiceProfiler_v3_fixed'; 
     const DEFAULT_PALETTE = ['#Aecce6', '#Beb5d8', '#Ebdc85', '#Bfc0c2', '#B4d9b6', '#e06666', '#f6b26b', '#ffd966', '#93c47d', '#76a5af', '#6d9eeb', '#8e7cc3', '#c27ba0', '#a61c00', '#434343', '#ffffff', '#e0e0e0', '#FF7800'];
     
     // Core Data Structure
@@ -444,22 +449,27 @@
             { id: 'study', name: '学习', color: '#Aecce6' }, 
             { id: 'sleep', name: '睡觉', color: '#Beb5d8' }, 
             { id: 'eat', name: '吃饭', color: '#Ebdc85' },
-            { id: 'life', name: '生活', color: '#B4d9b6' }, // Renamed from Sport
+            { id: 'life', name: '生活', color: '#B4d9b6' }, 
             { id: 'ent', name: '娱乐', color: '#Bfc0c2' },
-            { id: 'star', name: '*', color: '#FF7800' } // New Category
+            { id: 'star', name: '*', color: '#FF7800' } 
         ], 
         locations: [
-            { id: 'loc_desk', name: '工位', color: '#6baed6' }, // Darker Aecce6 (Study)
-            { id: 'loc_bed', name: '床上', color: '#8e7cc3' }, // Darker Beb5d8 (Sleep)
-            { id: 'loc_out', name: '外出', color: '#f6b26b' }  // Darker Ebdc85 (Eat)
+            { id: 'loc_desk', name: '工位', color: '#6baed6' }, 
+            { id: 'loc_bed', name: '床上', color: '#8e7cc3' }, 
+            { id: 'loc_out', name: '外出', color: '#f6b26b' }  
         ],
         events: [], 
         dayNotes: {}, 
         dayLongNotes: {},
         timeRowConfig: {},
-        lastExportConfig: { filename: 'daily_backup', range: 'all' }
+        lastExportConfig: { filename: 'daily_profile', range: 'all' }
     };
     
+    // History Stack
+    const MAX_HISTORY = 30;
+    let historyStack = [];
+    let redoStack = [];
+
     let calendar;
     let chartInstance = null;
     let isPaintMode = false;
@@ -472,6 +482,7 @@
         loadData();
         initCalendar();
         renderAllPalettes();
+        updateUndoRedoUI();
         
         document.getElementById('current-paint-preview').style.backgroundColor = currentPaintColor;
         document.getElementById('slogan-input').value = appData.slogan || "";
@@ -488,14 +499,72 @@
         syncAnalysisDates();
     });
 
+    // --- History System ---
+    function pushHistory() {
+        const state = JSON.parse(JSON.stringify(appData));
+        historyStack.push(state);
+        if (historyStack.length > MAX_HISTORY) historyStack.shift();
+        redoStack = []; 
+        updateUndoRedoUI();
+    }
+    
+    function executeUndo() {
+        if (historyStack.length === 0) return;
+        
+        // Save current state to redo stack
+        const current = JSON.parse(JSON.stringify(appData));
+        redoStack.push(current);
+        
+        // Restore previous state
+        const prev = historyStack.pop();
+        appData = prev;
+        
+        restoreState();
+    }
+    
+    function executeRedo() {
+        if (redoStack.length === 0) return;
+        
+        // Save current state to history stack
+        const current = JSON.parse(JSON.stringify(appData));
+        historyStack.push(current);
+        
+        // Restore redo state
+        const next = redoStack.pop();
+        appData = next;
+        
+        restoreState();
+    }
+    
+    function restoreState() {
+        // 1. Refresh Calendar with restored data
+        // Key Fix: Do NOT call saveData() before this, otherwise it overwrites appData with current (wrong) UI state.
+        reloadCalendar();
+        
+        // 2. Refresh other UI elements
+        document.getElementById('slogan-input').value = appData.slogan || "";
+        renderAllPalettes();
+        
+        // 3. Persist restored state to LocalStorage
+        // We use the restored 'appData' directly, ignoring whatever the calendar might emit during reload.
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+        
+        updateUndoRedoUI();
+        if(document.getElementById('analysis-view').style.display === 'block') generateAnalysis();
+    }
+    
+    function updateUndoRedoUI() {
+        document.getElementById('btn-undo').disabled = historyStack.length === 0;
+        document.getElementById('btn-redo').disabled = redoStack.length === 0;
+    }
+
     // --- Data Persistence ---
     function loadData() {
         const saved = localStorage.getItem(STORAGE_KEY); 
         if (saved) { 
             const parsed = JSON.parse(saved);
-            // Merge defaults for robust compatibility
             appData = { ...appData, ...parsed };
-            // Ensure compatibility if arrays are empty in saved data
+            // Defaults protection
             if(!appData.categories || appData.categories.length === 0) {
                  appData.categories = [
                     { id: 'work', name: '工作', color: '#Aecce6' }, 
@@ -515,21 +584,22 @@
                 ];
             }
             if(!appData.dayLongNotes) appData.dayLongNotes = {};
-            if(!appData.lastExportConfig) appData.lastExportConfig = { filename: 'daily_backup', range: 'all' };
         }
     }
 
-    function saveData() {
+    function saveData(skipHistory) {
         if(calendar) {
+            // Sync current view to model
             appData.events = calendar.getEvents().map(e => ({
                 id: e.id, title: e.title, start: e.start, end: e.end, 
                 extendedProps: e.extendedProps, display: e.display, backgroundColor: e.backgroundColor 
             }));
         }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+        if(!skipHistory) updateUndoRedoUI();
     }
     
-    function saveSlogan() { appData.slogan = document.getElementById('slogan-input').value; saveData(); }
+    function saveSlogan() { pushHistory(); appData.slogan = document.getElementById('slogan-input').value; saveData(); }
 
     function clearAllData() {
         if(confirm('警告：确定要清空所有数据吗？此操作无法撤销。')) {
@@ -660,7 +730,8 @@
                 if (isPaintMode) addPaintEvent(info.start, info.end); 
                 else openEventModal(null, info.start, info.end); 
             },
-            eventDrop: saveData, eventResize: saveData,
+            eventDrop: function() { pushHistory(); saveData(); }, 
+            eventResize: function() { pushHistory(); saveData(); },
             
             // Event Rendering (Location Bar)
             eventDidMount: function(info) {
@@ -697,6 +768,7 @@
         dayNoteModal.show(); 
     }
     function saveDayNote() { 
+        pushHistory();
         const d = document.getElementById('dayNoteDate').value; 
         const shortTxt = document.getElementById('dayNoteInput').value; 
         const longTxt = document.getElementById('dayLongNoteInput').value;
@@ -742,6 +814,7 @@
     }
 
     function saveEvent() {
+        pushHistory();
         const id = document.getElementById('eventId').value;
         const title = document.getElementById('eventTitle').value;
         const catId = document.getElementById('eventCategory').value;
@@ -772,6 +845,7 @@
         saveData(); eventModal.hide();
     }
     function deleteCurrentEvent() { 
+        pushHistory();
         const id = document.getElementById('eventId').value; 
         if(id) { calendar.getEventById(id).remove(); saveData(); eventModal.hide(); } 
     }
@@ -830,6 +904,7 @@
     }
 
     function saveManagerItem() {
+        pushHistory();
         const type = document.getElementById('mgrType').value;
         const id = document.getElementById('mgrEditId').value;
         const name = document.getElementById('mgrNameInput').value;
@@ -930,6 +1005,7 @@
             try {
                 const imported = JSON.parse(e.target.result);
                 if (confirm("导入将覆盖现有数据，确定继续？")) {
+                    pushHistory();
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(imported));
                     location.reload();
                 }
@@ -1082,13 +1158,14 @@
     }
     
     // Paint
-    function addPaintEvent(start, end) { calendar.addEvent({ id: 'bg_' + Date.now(), start: start, end: end, display: 'background', backgroundColor: currentPaintColor }); saveData(); }
-    function clearAllPaintOnPage() { if(confirm("清除所有染色？")) { const v = calendar.view; const evs = calendar.getEvents().filter(e => e.display === 'background' && e.start < v.activeEnd && e.end > v.activeStart); evs.forEach(e => e.remove()); saveData(); } }
+    function addPaintEvent(start, end) { pushHistory(); calendar.addEvent({ id: 'bg_' + Date.now(), start: start, end: end, display: 'background', backgroundColor: currentPaintColor }); saveData(); }
+    function clearAllPaintOnPage() { if(confirm("清除所有染色？")) { pushHistory(); const v = calendar.view; const evs = calendar.getEvents().filter(e => e.display === 'background' && e.start < v.activeEnd && e.end > v.activeStart); evs.forEach(e => e.remove()); saveData(); } }
     
     // Time Row & Misc Modals
     const timeRowModal = new bootstrap.Modal(document.getElementById('timeRowModal'));
     function openTimeRowModal(key) { document.getElementById('timeRowKey').value = key; const c = appData.timeRowConfig[key] || {}; document.getElementById('timeRowText').value = c.text || ''; document.getElementById('timeRowCustomColor').value = c.color || '#000000'; document.getElementById('timeRowApplyBg').checked = !!c.applyBg; timeRowModal.show(); }
     function saveTimeRow() { 
+        pushHistory();
         const k = document.getElementById('timeRowKey').value; 
         const t = document.getElementById('timeRowText').value; 
         const c = document.getElementById('timeRowCustomColor').value;
@@ -1096,12 +1173,12 @@
         if(!t && !bg) delete appData.timeRowConfig[k]; else appData.timeRowConfig[k] = { text:t, color:c, applyBg:bg };
         saveData(); reloadCalendar(); timeRowModal.hide();
     }
-    function clearTimeRow() { delete appData.timeRowConfig[document.getElementById('timeRowKey').value]; saveData(); reloadCalendar(); timeRowModal.hide(); }
+    function clearTimeRow() { pushHistory(); delete appData.timeRowConfig[document.getElementById('timeRowKey').value]; saveData(); reloadCalendar(); timeRowModal.hide(); }
 
     // Palette Manager
     const paletteModal = new bootstrap.Modal(document.getElementById('paletteModal'));
     function openPaletteManager() { renderAllPalettes(); paletteModal.show(); }
-    function addToPalette() { const c = document.getElementById('newPaletteColor').value; if(!appData.palette.includes(c)) { appData.palette.push(c); renderAllPalettes(); saveData(); } }
+    function addToPalette() { const c = document.getElementById('newPaletteColor').value; if(!appData.palette.includes(c)) { pushHistory(); appData.palette.push(c); renderAllPalettes(); saveData(); } }
     function renderAllPalettes() {
         ['paint-palette-grid', 'mgr-palette-grid', 'edit-palette-grid'].forEach(id => {
             const el = document.getElementById(id); if(!el) return; el.innerHTML = '';
@@ -1110,7 +1187,7 @@
                 d.onclick = () => {
                     if(id === 'paint-palette-grid') { currentPaintColor = c; document.getElementById('current-paint-preview').style.background = c; }
                     else if(id === 'mgr-palette-grid') document.getElementById('mgrColorInput').value = c;
-                    else if(id === 'edit-palette-grid') { if(confirm('Delete?')) { appData.palette = appData.palette.filter(x => x!==c); renderAllPalettes(); saveData(); } }
+                    else if(id === 'edit-palette-grid') { if(confirm('Delete?')) { pushHistory(); appData.palette = appData.palette.filter(x => x!==c); renderAllPalettes(); saveData(); } }
                 };
                 el.appendChild(d);
             });
