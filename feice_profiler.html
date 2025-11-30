@@ -13,7 +13,7 @@
             --fc-today-bg-color: rgba(255, 252, 232, 0.5);
             --fc-now-indicator-color: #ea4335;
             --slot-height: 30px;
-            --header-height: 40px;
+            --header-height: 44px;
         }
         body { 
             padding: 10px; 
@@ -81,7 +81,7 @@
         .zoom-group .btn.active { background: #f1f3f4; border-color: #dadce0; font-weight: bold; }
         
         #row-height-input {
-            width: 50px;
+            width: 40px;
             font-size: 0.75rem;
             padding: 2px 4px;
             border: 1px solid #ddd;
@@ -89,7 +89,6 @@
             text-align: center;
             height: 24px;
         }
-        #row-height-input:focus { outline: none; border-color: #1967d2; }
 
         /* Slogan */
         .slogan-container {
@@ -103,26 +102,25 @@
             background: transparent;
             font-size: 0.9rem;
             font-weight: 500;
-            color: #888;
+            color: #444;
             text-align: center;
             padding: 2px 8px;
             border-radius: 4px;
             width: 240px;
             transition: all 0.2s;
         }
+        /* 针对 placeholder 进行样式修改，使其默认斜体 */
+        #slogan-input::placeholder {
+            font-style: italic;
+            color: #aaa;
+            font-weight: normal;
+        }
         #slogan-input:hover { border-color: #ddd; }
         #slogan-input:focus { outline: none; border-color: #1967d2; background: #fff; color: #000; }
-        #slogan-input::placeholder { color: #aaa; font-style: italic; }
-
-        /* Mode Switch */
-        .mode-switch { background: #f1f3f4; padding: 2px; border-radius: 4px; display: flex; }
-        .mode-btn { border: none; background: transparent; padding: 1px 8px; border-radius: 3px; font-size: 0.75rem; color: #666; }
-        .mode-btn.active { background: white; color: black; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .mode-btn.active-paint { background: #feeFC3; color: #b06000; }
 
         /* Tools */
         .right-tools { 
-            margin-left: auto; /* 关键：强制推到最右侧 */
+            margin-left: auto;
             display: flex; 
             align-items: center; 
             gap: 6px; 
@@ -130,14 +128,15 @@
         
         .btn-text {
             font-size: 0.8rem;
-            padding: 2px 8px;
+            padding: 4px 8px;
             color: #444;
             border: 1px solid transparent;
             border-radius: 4px;
             background: transparent;
+            cursor: pointer;
+            font-weight: 500;
         }
         .btn-text:hover { background: #f1f3f4; color: #000; }
-        .btn-text:disabled { color: #ccc; cursor: not-allowed; }
         .btn-text-danger { color: #d93025; }
         .btn-text-danger:hover { background: #fce8e6; color: #c5221f; }
 
@@ -155,13 +154,12 @@
             background: white; cursor: pointer; height: 24px;
         }
         .current-paint-color { width: 12px; height: 12px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.1); }
-        .btn-clear-paint {
-            height: 24px; width: 24px; 
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid transparent; border-radius: 4px;
-            color: #d93025; cursor: pointer; background: transparent;
-        }
-        .btn-clear-paint:hover { background: #fce8e6; }
+
+        /* Mode Switch */
+        .mode-switch { background: #f1f3f4; padding: 2px; border-radius: 4px; display: flex; }
+        .mode-btn { border: none; background: transparent; padding: 1px 8px; border-radius: 3px; font-size: 0.75rem; color: #666; }
+        .mode-btn.active { background: white; color: black; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .mode-btn.active-paint { background: #feeFC3; color: #b06000; }
 
         /* --- Calendar View --- */
         #calendar-view { flex: 1; padding: 0; overflow: hidden; position: relative; display: flex; flex-direction: column; }
@@ -177,77 +175,63 @@
             border-bottom: 1px solid #f0f0f0 !important;
         }
         
-        .fc-timegrid-slot-label { vertical-align: middle; }
-        .fc-timegrid-slot-label-frame { text-align: right; padding-right: 4px; min-height: 100%; }
-        
+        /* Time Labels */
         .time-label-custom {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            cursor: pointer;
-            font-size: 0.75em;
-            padding-right: 4px;
-            user-select: none;
-            overflow: hidden; 
-            min-height: 0; 
+            width: 100%; height: 100%; display: flex; align-items: center; justify-content: flex-end;
+            cursor: pointer; font-size: 0.75em; padding-right: 4px; user-select: none;
         }
         .time-label-custom:hover { background: rgba(0,0,0,0.02); }
         .time-label-visible { color: #888; }
-        .time-label-visible:hover { color: #1967d2; font-weight: bold; }
         .time-label-transparent { color: transparent; }
         .time-label-config { font-weight: bold; }
 
-        .fc-event { border: none; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-size: 0.8em; padding: 0 2px; overflow: hidden;}
+        /* Events */
+        .fc-event { 
+            border: none; border-radius: 3px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1); 
+            font-size: 0.8em; padding: 0; overflow: hidden;
+            transition: transform 0.1s;
+        }
+        .fc-event:hover { z-index: 50 !important; }
+        .fc-event-main { padding: 1px 2px 1px 6px; } /* Left padding for location bar */
+
         .fc-bg-event { opacity: 0.8 !important; z-index: 1; } 
-        .fc-timegrid-col-events { z-index: 2; }
-        .fc-timegrid-now-indicator-line { border-color: #ea4335; border-width: 2px 0 0; z-index: 4; }
-        .fc-timegrid-now-indicator-arrow { border-color: #ea4335; border-width: 5px 0 5px 6px; border-bottom-color: transparent; border-top-color: transparent; z-index: 4; }
+        .fc-timegrid-now-indicator-line { border-color: #ea4335; z-index: 4; }
 
-        .fc-col-header-cell-cushion {
-            display: block; padding: 4px 2px;
-            color: inherit; text-decoration: none !important;
-            width: 100%; font-size: 0.85rem;
-        }
-        .date-text { font-weight: 600; }
+        /* Header Date */
+        .fc-col-header-cell-cushion { width: 100%; text-decoration: none !important; color: inherit; padding: 4px 2px; }
+        .date-header-container { position: relative; width: 100%; text-align: center; }
+        .date-text { font-weight: 600; font-size: 0.85rem; }
         .date-note { font-size: 0.7em; color: #1967d2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+        .date-badge {
+            position: absolute; top: -2px; right: 4px;
+            width: 6px; height: 6px; background-color: #d93025; border-radius: 50%;
+            display: none;
+        }
+        .date-badge.has-note { display: block; }
 
-        .color-grid {
-            display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px;
-            padding: 8px; width: 200px;
-        }
-        .color-cell {
-            width: 18px; height: 18px; border-radius: 50%; cursor: pointer;
-            border: 2px solid transparent;
-        }
-        .color-cell:hover { transform: scale(1.2); z-index: 2; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        /* Palettes */
+        .color-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; padding: 8px; width: 220px; }
+        .color-cell { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .color-cell:hover { transform: scale(1.2); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         
+        /* Analysis */
         .analysis-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin: 0 auto; max-width: 900px; }
 
         /* Context Menu */
         #context-menu {
-            position: absolute;
-            z-index: 9999;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none;
-            min-width: 100px;
-            padding: 4px 0;
-            font-family: system-ui, -apple-system, sans-serif;
+            position: absolute; z-index: 9999; background: white;
+            border: 1px solid #e0e0e0; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none; min-width: 120px; padding: 4px 0;
         }
         .context-menu-item {
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            color: #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 6px 12px; font-size: 0.85rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
         }
         .context-menu-item:hover { background-color: #f5f5f5; color: #1967d2; }
+
+        .location-indicator {
+            position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;"> 
@@ -255,29 +239,27 @@
 <div id="app-container">
     <div id="header-bar">
         <div class="view-tabs btn-group">
-            <button class="btn active" id="tab-plan" onclick="switchMainTab('calendar')">日历视图</button>
-            <button class="btn" id="tab-stats" onclick="switchMainTab('analysis')">分析视图</button>
+            <button class="btn active" id="tab-plan" onclick="switchMainTab('calendar')">日历</button>
+            <button class="btn" id="tab-stats" onclick="switchMainTab('analysis')">分析</button>
         </div>
 
         <div class="sep"></div>
 
         <div id="group-nav" class="nav-group btn-group tool-group-calendar">
-            <button class="btn btn-sm btn-light border-0" onclick="calendar.prev()"><i class="bi bi-chevron-left"></i> Prev</button>
-            <button class="btn btn-sm btn-light border-0" onclick="calendar.next()">Next <i class="bi bi-chevron-right"></i></button>
-            <button class="btn btn-sm btn-light border-0 fw-bold" onclick="calendar.today()">Today</button>
+            <button class="btn btn-sm btn-light border-0" onclick="calendar.prev()"><i class="bi bi-chevron-left"></i></button>
+            <button class="btn btn-sm btn-light border-0" onclick="calendar.next()"><i class="bi bi-chevron-right"></i></button>
+            <button class="btn btn-sm btn-light border-0 fw-bold" onclick="calendar.today()">今</button>
         </div>
         
-        <span id="current-week-badge" class="badge bg-light text-secondary border fw-normal cursor-pointer ms-1 tool-group-calendar" onclick="openSettings()">Week ?</span>
+        <span id="current-week-badge" class="badge bg-light text-secondary border fw-normal cursor-pointer tool-group-calendar" onclick="openSettings()">W?</span>
 
         <div class="sep tool-group-calendar"></div>
 
         <div id="group-zoom" class="zoom-group tool-group-calendar">
-            <button class="btn" id="zoom-fit" onclick="setZoomMode('fit')" title="自动铺满屏幕">单屏</button>
+            <button class="btn" id="zoom-fit" onclick="setZoomMode('fit')">全屏</button>
             <button class="btn" id="zoom-normal" onclick="setZoomMode('normal')">普通</button>
-            <input type="number" id="row-height-input" placeholder="pt" onkeydown="handleRowHeightKey(event)" title="输入行高(px)并回车">
+            <input type="number" id="row-height-input" placeholder="pt" onkeydown="handleRowHeightKey(event)">
         </div>
-        
-        <div class="sep tool-group-calendar"></div>
         
         <div class="slogan-container tool-group-calendar">
             <input type="text" id="slogan-input" placeholder="锻炼直觉" onchange="saveSlogan()">
@@ -286,29 +268,18 @@
         <div class="right-tools">
             <div id="paint-tools" style="display:none;">
                 <div class="paint-wrapper">
-                    <button class="btn-clear-paint" onclick="clearAllPaintOnPage()" title="清除本页所有染色">
-                        <i class="bi bi-eraser-fill" style="font-size: 0.9em;"></i>
-                    </button>
+                    <button class="btn btn-icon-tool text-danger border-0" onclick="clearAllPaintOnPage()"><i class="bi bi-eraser-fill"></i></button>
                     <div class="dropdown">
                         <div class="paint-dropdown-toggle" data-bs-toggle="dropdown">
                             <div id="current-paint-preview" class="current-paint-color" style="background-color: #e0e0e0;"></div>
-                            <i class="bi bi-chevron-down small text-muted" style="font-size:0.6em"></i>
+                            <i class="bi bi-chevron-down small text-muted ms-1" style="font-size:0.6em"></i>
                         </div>
                         <div class="dropdown-menu p-0">
-                            <div class="p-2 border-bottom small text-muted d-flex justify-content-between">
-                                <span>底色 (80%透明)</span>
-                                <a href="#" onclick="openPaletteManager()" class="text-decoration-none" style="font-size:0.8em">管理</a>
-                            </div>
                             <div class="color-grid" id="paint-palette-grid"></div>
+                            <div class="p-2 border-top text-center"><small class="text-muted cursor-pointer" onclick="openPaletteManager()">管理色板</small></div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div id="group-history" class="d-flex gap-1 tool-group-calendar">
-                <button class="btn btn-icon-tool" id="btn-undo" onclick="executeUndo()" title="撤回 (Undo)" disabled><i class="bi bi-arrow-counterclockwise"></i></button>
-                <button class="btn btn-icon-tool" id="btn-redo" onclick="executeRedo()" title="重做 (Redo)" disabled><i class="bi bi-arrow-clockwise"></i></button>
-                <div class="sep"></div>
             </div>
 
             <div class="mode-switch tool-group-calendar" id="group-mode">
@@ -318,10 +289,17 @@
 
             <div class="sep tool-group-calendar"></div>
 
-            <button class="btn-text tool-group-calendar" id="btn-props" onclick="openCategoryManager()">属性</button>
+            <div class="d-flex gap-1 tool-group-calendar">
+                <button class="btn-text" onclick="openCategoryManager()">属性</button>
+                <button class="btn-text" onclick="openLocationManager()">位置</button>
+            </div>
             
+            <div class="sep"></div>
+
             <input type="file" id="hiddenImportInput" style="display:none" accept=".json" onchange="handleFileImport(this)">
             <button class="btn-text" onclick="document.getElementById('hiddenImportInput').click()">导入</button>
+            
+            <button class="btn-text" onclick="quickSave()">快速保存</button>
             <button class="btn-text" onclick="openExportModal()">导出</button>
             <button class="btn-text btn-text-danger" onclick="clearAllData()">清空</button>
         </div>
@@ -335,22 +313,32 @@
         <div class="analysis-card">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h6 class="m-0 fw-bold">数据统计</h6>
-                <div class="d-flex gap-2">
-                    <div class="d-flex gap-1 align-items-center bg-light px-2 rounded border">
-                        <input type="date" class="form-control form-control-sm py-0 border-0 bg-transparent" id="analysisStart" onchange="handleManualDateChange()">
-                        <span class="text-muted small">~</span>
-                        <input type="date" class="form-control form-control-sm py-0 border-0 bg-transparent" id="analysisEnd" onchange="handleManualDateChange()">
+                <div class="d-flex gap-2 align-items-center">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="statsDim" id="dim-cat" value="category" checked onchange="generateAnalysis()">
+                        <label class="btn btn-outline-secondary" for="dim-cat">按属性</label>
+                        <input type="radio" class="btn-check" name="statsDim" id="dim-loc" value="location" onchange="generateAnalysis()">
+                        <label class="btn btn-outline-secondary" for="dim-loc">按位置</label>
                     </div>
-                    <select class="form-select form-select-sm py-0" id="analysisPreset" onchange="syncAnalysisDates()" style="width:100px; font-size:0.85rem;">
+                    <div class="sep mx-2" style="height:20px"></div>
+                    <select class="form-select form-select-sm" id="analysisPreset" onchange="syncAnalysisDates()" style="width:100px;">
                         <option value="week">本周</option>
                         <option value="month">本月</option>
                         <option value="today">今日</option>
                         <option value="all">全部</option>
                         <option value="custom">自定义</option>
                     </select>
-                    <button class="btn btn-primary btn-sm py-0" onclick="generateAnalysis()">刷新</button>
                 </div>
             </div>
+            
+            <div class="row mb-3" id="customAnalysisRange" style="display:none">
+                <div class="col-12 d-flex justify-content-end gap-2">
+                    <input type="date" class="form-control form-control-sm w-auto" id="analysisStart" onchange="generateAnalysis()">
+                    <span class="align-self-center">-</span>
+                    <input type="date" class="form-control form-control-sm w-auto" id="analysisEnd" onchange="generateAnalysis()">
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-5"><canvas id="analysisChart"></canvas></div>
                 <div class="col-md-7">
@@ -371,7 +359,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="dayNoteModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content"><div class="modal-header py-2"><h6 class="modal-title" id="dayNoteTitle">编辑备注</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="dayNoteDate"><input type="text" class="form-control mb-3" id="dayNoteInput" placeholder="输入备注"><button class="btn btn-primary btn-sm w-100" onclick="saveDayNote()">保存</button></div></div></div></div>
+<div class="modal fade" id="dayNoteModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content"><div class="modal-header py-2"><h6 class="modal-title">日期备注</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="dayNoteDate"><label class="small text-muted mb-1">简短标题 (显示在日历)</label><input type="text" class="form-control mb-2" id="dayNoteInput" placeholder="例如: 节假日"><label class="small text-muted mb-1">详细记录 (仅显示角标)</label><textarea class="form-control mb-3" id="dayLongNoteInput" rows="4" placeholder="详细的日记或备注..."></textarea><button class="btn btn-primary btn-sm w-100" onclick="saveDayNote()">保存</button></div></div></div></div>
 
 <div class="modal fade" id="eventModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -379,20 +367,24 @@
             <div class="modal-header py-2">
                 <h6 class="modal-title">编辑事件</h6>
                 <div class="ms-auto d-flex gap-2">
-                    <button type="button" class="btn btn-sm btn-outline-primary py-0" onclick="pasteToModal()" title="读取复制内容并填入">
-                        <i class="bi bi-clipboard-plus"></i> 粘贴
-                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary py-0" onclick="pasteToModal()"><i class="bi bi-clipboard-plus"></i></button>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
             </div>
             <div class="modal-body">
                 <form id="eventForm">
                     <input type="hidden" id="eventId">
-                    <div class="mb-3">
-                        <label class="form-label small text-muted mb-1">属性</label>
-                        <select class="form-select" id="eventCategory" required></select>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <label class="form-label small text-muted mb-1">属性 (Category)</label>
+                            <select class="form-select form-select-sm" id="eventCategory"></select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small text-muted mb-1">位置 (Location)</label>
+                            <select class="form-select form-select-sm" id="eventLocation"></select>
+                        </div>
                     </div>
-                    <div class="row mb-3">
+                    <div class="row mb-2">
                         <div class="col-6">
                             <label class="form-label small text-muted mb-1">开始</label>
                             <input type="datetime-local" class="form-control form-control-sm" id="eventStartInput">
@@ -402,9 +394,13 @@
                             <input type="datetime-local" class="form-control form-control-sm" id="eventEndInput">
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <label class="form-label small text-muted mb-1">名称</label>
                         <input type="text" class="form-control" id="eventTitle" placeholder="默认使用属性名">
+                    </div>
+                    <div class="mb-3">
+                         <label class="form-label small text-muted mb-1">详细描述</label>
+                         <textarea class="form-control form-control-sm" id="eventDesc" rows="3"></textarea>
                     </div>
                     <div class="d-flex justify-content-between pt-2 border-top">
                         <button type="button" class="btn btn-sm btn-outline-danger" id="btnDeleteEvent" style="display:none;" onclick="deleteCurrentEvent()">删除</button>
@@ -416,11 +412,17 @@
     </div>
 </div>
 
-<div class="modal fade" id="timeRowModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content"><div class="modal-header py-2"><h6 class="modal-title">时间轴设置</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="timeRowKey"><label class="small text-muted mb-1">备注文字 (替代时间显示)</label><input type="text" class="form-control mb-2" id="timeRowText"><label class="small text-muted mb-1">颜色</label><div class="input-group mb-2"><input type="color" class="form-control form-control-color" id="timeRowCustomColor" value="#000000" title="自定义颜色"><button class="btn btn-outline-secondary btn-sm" type="button" onclick="openPaletteManager()">管理色板</button></div><div id="time-row-palette-grid" class="color-grid w-100 mb-3"></div><div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="timeRowApplyBg"><label class="form-check-label small" for="timeRowApplyBg">应用为行背景色 (80%透明)</label></div><div class="d-flex gap-2"><button class="btn btn-outline-secondary btn-sm w-50" onclick="clearTimeRow()">重置</button><button class="btn btn-primary btn-sm w-50" onclick="saveTimeRow()">保存</button></div></div></div></div></div>
+<div class="modal fade" id="timeRowModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content"><div class="modal-header py-2"><h6 class="modal-title">时间轴设置</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="timeRowKey"><label class="small text-muted mb-1">文字</label><input type="text" class="form-control mb-2" id="timeRowText"><label class="small text-muted mb-1">颜色</label><input type="color" class="form-control form-control-color mb-3 w-100" id="timeRowCustomColor"><div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="timeRowApplyBg"><label class="form-check-label small" for="timeRowApplyBg">应用为背景行</label></div><div class="d-flex gap-2"><button class="btn btn-outline-secondary btn-sm w-50" onclick="clearTimeRow()">重置</button><button class="btn btn-primary btn-sm w-50" onclick="saveTimeRow()">保存</button></div></div></div></div></div>
 
-<div class="modal fade" id="exportModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content"><div class="modal-header"><h6 class="modal-title">导出选项</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select class="form-select mb-3" id="exportRangeType" onchange="toggleExportInputs()"><option value="all">全部数据</option><option value="month">本月</option><option value="week">本周</option><option value="today">今日</option><option value="custom">自定义范围...</option></select><div id="exportCustomInputs" class="mb-3" style="display:none;"><input type="date" class="form-control form-control-sm mb-1" id="exportStart"><input type="date" class="form-control form-control-sm" id="exportEnd"></div><button class="btn btn-primary w-100" onclick="executeExport()">下载 .json</button></div></div></div></div>
-<div class="modal fade" id="categoryModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">属性管理</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="card bg-light border-0 mb-3"><div class="card-body p-3"><input type="hidden" id="catEditId"><div class="input-group mb-2"><input type="text" class="form-control" id="catNameInput" placeholder="属性名称"><input type="color" class="form-control form-control-color" id="catColorInput" value="#Aecce6"></div><div id="mgmt-palette-grid" class="color-grid w-100"></div><button class="btn btn-success btn-sm w-100 mt-2" onclick="saveCategory()">保存属性</button></div></div><ul class="list-group list-group-flush" id="categoryList" style="max-height: 200px; overflow-y: auto;"></ul></div><div class="modal-footer justify-content-between"><button class="btn btn-sm btn-outline-secondary" onclick="openPaletteManager()">编辑色板...</button><button class="btn btn-sm btn-secondary" data-bs-dismiss="modal">关闭</button></div></div></div></div>
-<div class="modal fade" id="paletteModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h6 class="modal-title">编辑色板</h6><button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#categoryModal"></button></div><div class="modal-body"><div class="input-group mb-3"><input type="color" class="form-control form-control-color" id="newPaletteColor" value="#ffffff"><button class="btn btn-outline-secondary" type="button" onclick="addToPalette()">添加</button></div><div id="edit-palette-grid" class="color-grid w-100"></div></div></div></div></div>
+<div class="modal fade" id="exportModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content"><div class="modal-header"><h6 class="modal-title">导出/保存</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">
+    <label class="small text-muted mb-1">文件名 (无后缀)</label>
+    <input type="text" class="form-control mb-3" id="exportFilename" placeholder="daily_profile">
+    <label class="small text-muted mb-1">范围</label>
+    <select class="form-select mb-3" id="exportRangeType" onchange="toggleExportInputs()"><option value="all">全部数据</option><option value="month">本月</option><option value="week">本周</option><option value="custom">自定义范围</option></select><div id="exportCustomInputs" class="mb-3" style="display:none;"><input type="date" class="form-control form-control-sm mb-1" id="exportStart"><input type="date" class="form-control form-control-sm" id="exportEnd"></div><button class="btn btn-primary w-100" onclick="executeExport()">下载 .json</button></div></div></div></div>
+
+<div class="modal fade" id="managerModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="managerTitle">管理</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="card bg-light border-0 mb-3"><div class="card-body p-3"><input type="hidden" id="mgrType"><input type="hidden" id="mgrEditId"><div class="input-group mb-2"><input type="text" class="form-control" id="mgrNameInput" placeholder="名称"><input type="color" class="form-control form-control-color" id="mgrColorInput" value="#Aecce6"></div><div id="mgr-palette-grid" class="color-grid w-100"></div><button class="btn btn-success btn-sm w-100 mt-2" onclick="saveManagerItem()">保存</button></div></div><ul class="list-group list-group-flush" id="managerList" style="max-height: 200px; overflow-y: auto;"></ul></div></div></div></div>
+
+<div class="modal fade" id="paletteModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h6 class="modal-title">编辑色板</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="input-group mb-3"><input type="color" class="form-control form-control-color" id="newPaletteColor" value="#ffffff"><button class="btn btn-outline-secondary" type="button" onclick="addToPalette()">添加</button></div><div id="edit-palette-grid" class="color-grid w-100"></div></div></div></div></div>
 <div class="modal fade" id="settingsModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h6 class="modal-title">设置</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><label class="form-label small">Week 0 Start Date</label><input type="date" class="form-control mb-3" id="weekOneDateInput"><button class="btn btn-primary btn-sm w-100" onclick="saveSettings()">保存</button></div></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -428,58 +430,48 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // --- Utils ---
-    function hexToRgba(hex, alpha) {
-        let r = 0, g = 0, b = 0;
-        if (hex.length === 4) {
-            r = parseInt(hex[1] + hex[1], 16);
-            g = parseInt(hex[2] + hex[2], 16);
-            b = parseInt(hex[3] + hex[3], 16);
-        } else if (hex.length === 7) {
-            r = parseInt(hex.substring(1, 3), 16);
-            g = parseInt(hex.substring(3, 5), 16);
-            b = parseInt(hex.substring(5, 7), 16);
-        }
-        return `rgba(${r},${g},${b},${alpha})`;
-    }
-
-    function formatTimeKey(dateOrMs) {
-        let ms = 0;
-        if (typeof dateOrMs === 'number') {
-            ms = dateOrMs;
-        } else if (dateOrMs instanceof Date) {
-            ms = (dateOrMs.getHours() * 3600000) + (dateOrMs.getMinutes() * 60000) + (dateOrMs.getSeconds() * 1000);
-        } else if (typeof dateOrMs === 'object' && dateOrMs.milliseconds !== undefined) {
-             ms = dateOrMs.milliseconds; 
-        }
-        let h = Math.floor(ms / 3600000);
-        let m = Math.floor((ms % 3600000) / 60000);
-        let s = Math.floor((ms % 60000) / 1000);
-        return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    }
-
     // --- Data & State ---
-    const STORAGE_KEY = 'dailyProfilingV16';
-    const DEFAULT_PALETTE = ['#Aecce6', '#Beb5d8', '#Ebdc85', '#Bfc0c2', '#B4d9b6', '#e06666', '#f6b26b', '#ffd966', '#93c47d', '#76a5af', '#6d9eeb', '#8e7cc3', '#c27ba0', '#a61c00', '#434343', '#ffffff', '#e0e0e0'];
-    let appData = { weekOneDate: null, slogan: "", palette: [...DEFAULT_PALETTE], categories: [{ id: 'work', name: '工作', color: '#Aecce6' }, { id: 'study', name: '学习', color: '#Aecce6' }, { id: 'sleep', name: '睡觉', color: '#Beb5d8' }, { id: 'eat', name: '吃饭', color: '#Ebdc85' }, { id: 'ent', name: '娱乐', color: '#Bfc0c2' }, { id: 'sport', name: '运动', color: '#B4d9b6' }], events: [], dayNotes: {}, timeRowConfig: {} };
+    const STORAGE_KEY = 'feiceProfiler_v3'; // Increased version to force new defaults for fresh users
+    const DEFAULT_PALETTE = ['#Aecce6', '#Beb5d8', '#Ebdc85', '#Bfc0c2', '#B4d9b6', '#e06666', '#f6b26b', '#ffd966', '#93c47d', '#76a5af', '#6d9eeb', '#8e7cc3', '#c27ba0', '#a61c00', '#434343', '#ffffff', '#e0e0e0', '#FF7800'];
     
-    const MAX_HISTORY = 20;
-    let historyStack = [];
-    let redoStack = [];
-
+    // Core Data Structure
+    let appData = { 
+        weekOneDate: null, 
+        slogan: "", 
+        palette: [...DEFAULT_PALETTE], 
+        categories: [
+            { id: 'work', name: '工作', color: '#Aecce6' }, 
+            { id: 'study', name: '学习', color: '#Aecce6' }, 
+            { id: 'sleep', name: '睡觉', color: '#Beb5d8' }, 
+            { id: 'eat', name: '吃饭', color: '#Ebdc85' },
+            { id: 'life', name: '生活', color: '#B4d9b6' }, // Renamed from Sport
+            { id: 'ent', name: '娱乐', color: '#Bfc0c2' },
+            { id: 'star', name: '*', color: '#FF7800' } // New Category
+        ], 
+        locations: [
+            { id: 'loc_desk', name: '工位', color: '#6baed6' }, // Darker Aecce6 (Study)
+            { id: 'loc_bed', name: '床上', color: '#8e7cc3' }, // Darker Beb5d8 (Sleep)
+            { id: 'loc_out', name: '外出', color: '#f6b26b' }  // Darker Ebdc85 (Eat)
+        ],
+        events: [], 
+        dayNotes: {}, 
+        dayLongNotes: {},
+        timeRowConfig: {},
+        lastExportConfig: { filename: 'daily_backup', range: 'all' }
+    };
+    
     let calendar;
     let chartInstance = null;
     let isPaintMode = false;
     let currentPaintColor = appData.palette[0];
-    let currentZoomMode = 'fit'; 
     let clipboardEvent = null; 
     let ctxMenuTargetEventId = null;
 
+    // --- Init ---
     document.addEventListener('DOMContentLoaded', function() {
         loadData();
         initCalendar();
         renderAllPalettes();
-        renderCategoryOptions();
         
         document.getElementById('current-paint-preview').style.backgroundColor = currentPaintColor;
         document.getElementById('slogan-input').value = appData.slogan || "";
@@ -489,68 +481,42 @@
         let resizeTimeout;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                if(currentZoomMode === 'fit') applyZoom('fit');
-            }, 100);
+            resizeTimeout = setTimeout(() => { if(document.getElementById('zoom-fit').classList.contains('active')) applyZoom('fit'); }, 100);
         });
         
-        document.addEventListener('click', function(e) {
-            document.getElementById('context-menu').style.display = 'none';
-        });
-
+        document.addEventListener('click', () => document.getElementById('context-menu').style.display = 'none');
         syncAnalysisDates();
-        updateUndoRedoUI();
     });
 
-    // --- Undo / Redo ---
-    function pushHistory() {
-        const state = JSON.parse(JSON.stringify(appData));
-        historyStack.push(state);
-        if (historyStack.length > MAX_HISTORY) historyStack.shift();
-        redoStack = [];
-        updateUndoRedoUI();
-    }
-    function executeUndo() {
-        if (historyStack.length === 0) return;
-        redoStack.push(JSON.parse(JSON.stringify(appData)));
-        appData = historyStack.pop();
-        restoreState();
-        updateUndoRedoUI();
-    }
-    function executeRedo() {
-        if (redoStack.length === 0) return;
-        historyStack.push(JSON.parse(JSON.stringify(appData)));
-        appData = redoStack.pop();
-        restoreState();
-        updateUndoRedoUI();
-    }
-    function updateUndoRedoUI() {
-        document.getElementById('btn-undo').disabled = historyStack.length === 0;
-        document.getElementById('btn-redo').disabled = redoStack.length === 0;
-    }
-    function restoreState() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-        document.getElementById('slogan-input').value = appData.slogan || "";
-        if(calendar) {
-            reloadCalendar(); 
-        }
-        renderCategoryOptions();
-        renderAllPalettes();
-        if(document.getElementById('analysis-view').style.display === 'block') {
-            generateAnalysis();
-        }
-    }
-
+    // --- Data Persistence ---
     function loadData() {
         const saved = localStorage.getItem(STORAGE_KEY); 
         if (saved) { 
-            appData = JSON.parse(saved); 
-            if(!appData.palette) appData.palette = [...DEFAULT_PALETTE]; 
-            if(!appData.dayNotes) appData.dayNotes = {}; 
-            if(!appData.timeRowConfig) appData.timeRowConfig = {};
-            if(appData.slogan === undefined) appData.slogan = "";
+            const parsed = JSON.parse(saved);
+            // Merge defaults for robust compatibility
+            appData = { ...appData, ...parsed };
+            // Ensure compatibility if arrays are empty in saved data
+            if(!appData.categories || appData.categories.length === 0) {
+                 appData.categories = [
+                    { id: 'work', name: '工作', color: '#Aecce6' }, 
+                    { id: 'study', name: '学习', color: '#Aecce6' }, 
+                    { id: 'sleep', name: '睡觉', color: '#Beb5d8' }, 
+                    { id: 'eat', name: '吃饭', color: '#Ebdc85' },
+                    { id: 'life', name: '生活', color: '#B4d9b6' },
+                    { id: 'ent', name: '娱乐', color: '#Bfc0c2' },
+                    { id: 'star', name: '*', color: '#FF7800' }
+                ];
+            }
+            if(!appData.locations || appData.locations.length === 0) {
+                appData.locations = [
+                    { id: 'loc_desk', name: '工位', color: '#6baed6' },
+                    { id: 'loc_bed', name: '床上', color: '#8e7cc3' },
+                    { id: 'loc_out', name: '外出', color: '#f6b26b' }
+                ];
+            }
+            if(!appData.dayLongNotes) appData.dayLongNotes = {};
+            if(!appData.lastExportConfig) appData.lastExportConfig = { filename: 'daily_backup', range: 'all' };
         }
-        // No else block for backward compatibility
     }
 
     function saveData() {
@@ -563,10 +529,13 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
     }
     
-    function saveSlogan() {
-        pushHistory();
-        appData.slogan = document.getElementById('slogan-input').value;
-        saveData();
+    function saveSlogan() { appData.slogan = document.getElementById('slogan-input').value; saveData(); }
+
+    function clearAllData() {
+        if(confirm('警告：确定要清空所有数据吗？此操作无法撤销。')) {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
     }
 
     // --- UI Logic ---
@@ -577,20 +546,10 @@
         document.getElementById('analysis-view').style.display = tab === 'analysis' ? 'block' : 'none';
         
         const isStats = (tab === 'analysis');
-        document.querySelectorAll('.tool-group-calendar').forEach(el => {
-            el.classList.toggle('d-none', isStats);
-        });
-
-        if (isStats) {
-            document.getElementById('paint-tools').style.display = 'none';
-        } else {
-            document.getElementById('paint-tools').style.display = isPaintMode ? 'block' : 'none';
-        }
+        document.querySelectorAll('.tool-group-calendar').forEach(el => el.classList.toggle('d-none', isStats));
 
         if(tab === 'calendar') { 
-            setTimeout(() => {
-                reloadCalendar(); 
-            }, 0);
+            setTimeout(() => reloadCalendar(), 0);
         } else { 
             syncAnalysisDates(); 
             generateAnalysis(); 
@@ -602,23 +561,14 @@
         document.getElementById('mode-event').className = isPaintMode ? 'mode-btn' : 'mode-btn active';
         document.getElementById('mode-paint').className = isPaintMode ? 'mode-btn active-paint' : 'mode-btn';
         document.getElementById('paint-tools').style.display = isPaintMode ? 'block' : 'none';
-        document.getElementById('calendar-view').style.cursor = isPaintMode ? 'crosshair' : 'default';
     }
 
-    // --- Calendar Lifecycle ---
+    // --- Calendar ---
     function reloadCalendar() {
         if(!calendar) return;
-        const date = calendar.getDate();
-        const scroller = document.querySelector('.fc-scroller');
-        const scrollTop = scroller ? scroller.scrollTop : 0;
-        
+        const d = calendar.getDate();
         calendar.destroy();
-        initCalendar(date);
-        
-        setTimeout(() => {
-            const newScroller = document.querySelector('.fc-scroller');
-            if(newScroller) newScroller.scrollTop = scrollTop;
-        }, 0);
+        initCalendar(d);
     }
 
     function initCalendar(initialDate) {
@@ -627,14 +577,13 @@
         calendarEl.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             const menu = document.getElementById('context-menu');
-            
-            if (!e.target.closest('.fc-event')) {
-                ctxMenuTargetEventId = null;
-                menu.style.display = 'none';
-            } else {
+            if (e.target.closest('.fc-event')) {
+                ctxMenuTargetEventId = e.target.closest('.fc-event').fcSeg.eventRange.def.publicId;
                 menu.style.display = 'block';
                 menu.style.left = e.pageX + 'px';
                 menu.style.top = e.pageY + 'px';
+            } else {
+                menu.style.display = 'none';
             }
         });
 
@@ -644,53 +593,59 @@
             headerToolbar: false, 
             locale: 'zh-cn', firstDay: 1, allDaySlot: false,
             nowIndicator: true,
-
             selectable: true, editable: true, eventResizableFromStart: true,
-            expandRows: false, 
-            
             slotDuration: '00:30:00',
-            slotLabelInterval: '00:30:00', 
+            slotLabelInterval: '00:30:00',
             slotLabelFormat: { hour: 'numeric', minute: '2-digit', hour12: false },
             
+            // Custom Time Labels
             slotLabelContent: function(arg) {
-                const timeKey = formatTimeKey(arg.date);
+                const ms = (arg.date.getHours() * 3600000) + (arg.date.getMinutes() * 60000);
+                const timeKey = ms.toString();
                 const config = appData.timeRowConfig[timeKey];
                 
-                let displayText = arg.text;
-                let cssClass = 'time-label-visible';
+                let text = arg.text;
+                let css = 'time-label-visible';
+                let style = '';
 
-                if (!config) {
-                    if (arg.date.getMinutes() !== 0) {
-                        cssClass = 'time-label-transparent'; 
-                    }
-                } else {
-                    if (config.text) displayText = config.text;
-                    cssClass = 'time-label-config'; 
+                if (config) {
+                    text = config.text || text;
+                    css = 'time-label-config';
+                    if(config.color) style = `color:${config.color}`;
+                } else if (arg.date.getMinutes() !== 0) {
+                    css = 'time-label-transparent';
                 }
-
-                const colorStyle = (config && config.color) ? `color:${config.color}` : "";
-                return { html: `<div class="time-label-custom ${cssClass}" style="${colorStyle}" onclick="openTimeRowModal('${timeKey}')">${displayText}</div>` };
+                
+                return { html: `<div class="time-label-custom ${css}" style="${style}" onclick="openTimeRowModal('${timeKey}')">${text}</div>` };
             },
             
+            // Row Backgrounds
             slotLaneDidMount: function(arg) {
-                const timeKey = formatTimeKey(arg.time);
-                const config = appData.timeRowConfig[timeKey];
-                if (config && config.applyBg && config.color) {
-                    const bg = hexToRgba(config.color, 0.2);
-                    arg.el.style.backgroundColor = bg;
-                } else {
-                    arg.el.style.backgroundColor = ''; 
-                }
+                 const ms = (arg.time.milliseconds);
+                 const config = appData.timeRowConfig[ms.toString()];
+                 if (config && config.applyBg && config.color) {
+                     arg.el.style.backgroundColor = hexToRgba(config.color, 0.15);
+                 }
             },
 
+            // Date Headers (Short note + Badge)
             dayHeaderContent: function(args) {
                 const date = args.date;
                 const offset = date.getTimezoneOffset() * 60000;
                 const localDateStr = new Date(date.getTime() - offset).toISOString().split('T')[0];
-                const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
                 const text = `${date.getMonth() + 1}/${date.getDate()} ${weekdays[date.getDay()]}`;
-                const note = appData.dayNotes && appData.dayNotes[localDateStr] ? appData.dayNotes[localDateStr] : "";
-                return { html: `<div class="date-header-container" onclick="openDayNoteModal('${localDateStr}')"><div class="date-text">${text}</div>${note ? `<div class="date-note">"${note}"</div>` : ''}</div>` };
+                
+                const note = appData.dayNotes[localDateStr] || "";
+                const hasLongNote = !!appData.dayLongNotes[localDateStr];
+
+                return { html: `
+                    <div class="date-header-container" onclick="openDayNoteModal('${localDateStr}')">
+                        <div class="date-text">${text}</div>
+                        ${note ? `<div class="date-note">"${note}"</div>` : ''}
+                        <div class="date-badge ${hasLongNote ? 'has-note' : ''}"></div>
+                    </div>` 
+                };
             },
             
             height: '100%',
@@ -705,213 +660,462 @@
                 if (isPaintMode) addPaintEvent(info.start, info.end); 
                 else openEventModal(null, info.start, info.end); 
             },
-            eventDrop: () => { pushHistory(); saveData(); }, 
-            eventResize: () => { pushHistory(); saveData(); },
+            eventDrop: saveData, eventResize: saveData,
+            
+            // Event Rendering (Location Bar)
             eventDidMount: function(info) {
-                info.el.addEventListener('contextmenu', (e) => {
-                    ctxMenuTargetEventId = info.event.id;
-                });
                 if (info.event.display === 'background') {
-                    if (info.event.backgroundColor) {
-                        info.el.style.backgroundColor = hexToRgba(info.event.backgroundColor, 0.2);
-                    }
+                    if (info.event.backgroundColor) info.el.style.backgroundColor = hexToRgba(info.event.backgroundColor, 0.2);
                 } else {
-                    const catId = info.event.extendedProps.categoryId;
+                    const props = info.event.extendedProps || {};
+                    const catId = props.categoryId;
                     const cat = appData.categories.find(c => c.id === catId);
-                    if(cat) { info.el.style.backgroundColor = cat.color; info.el.style.color = '#222'; }
+                    if(cat) { 
+                        info.el.style.backgroundColor = cat.color; 
+                        info.el.style.color = '#222'; 
+                    }
+                    // Location Indicator (Left Border)
+                    const locId = props.locationId;
+                    const loc = appData.locations.find(l => l.id === locId);
+                    if (loc) {
+                        info.el.style.borderLeft = `5px solid ${loc.color}`;
+                    }
                 }
             }
         });
         calendar.render();
     }
 
-    // --- Copy / Paste Logic ---
+    // --- Modals & Business Logic ---
+    
+    // Day Notes
+    const dayNoteModal = new bootstrap.Modal(document.getElementById('dayNoteModal'));
+    function openDayNoteModal(dateStr) { 
+        document.getElementById('dayNoteDate').value = dateStr; 
+        document.getElementById('dayNoteInput').value = appData.dayNotes[dateStr] || ''; 
+        document.getElementById('dayLongNoteInput').value = appData.dayLongNotes[dateStr] || ''; 
+        dayNoteModal.show(); 
+    }
+    function saveDayNote() { 
+        const d = document.getElementById('dayNoteDate').value; 
+        const shortTxt = document.getElementById('dayNoteInput').value; 
+        const longTxt = document.getElementById('dayLongNoteInput').value;
+        
+        if (shortTxt) appData.dayNotes[d] = shortTxt; else delete appData.dayNotes[d];
+        if (longTxt) appData.dayLongNotes[d] = longTxt; else delete appData.dayLongNotes[d];
+        
+        saveData(); calendar.render(); dayNoteModal.hide(); 
+    }
+
+    // Events
+    const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+    function toISO(date) { const offset = date.getTimezoneOffset() * 60000; return (new Date(date - offset)).toISOString().slice(0, 16); }
+    
+    function populateSelect(id, items) {
+        const sel = document.getElementById(id); sel.innerHTML = '';
+        items.forEach(i => { const opt = document.createElement('option'); opt.value = i.id; opt.textContent = i.name; sel.appendChild(opt); });
+    }
+
+    function openEventModal(event, start, end) {
+        populateSelect('eventCategory', appData.categories);
+        populateSelect('eventLocation', appData.locations);
+
+        const isEdit = !!event;
+        document.getElementById('btnDeleteEvent').style.display = isEdit ? 'block' : 'none';
+        
+        if (isEdit) {
+            document.getElementById('eventId').value = event.id;
+            document.getElementById('eventTitle').value = event.title;
+            document.getElementById('eventCategory').value = event.extendedProps.categoryId || appData.categories[0].id;
+            document.getElementById('eventLocation').value = event.extendedProps.locationId || appData.locations[0].id;
+            document.getElementById('eventDesc').value = event.extendedProps.description || '';
+            document.getElementById('eventStartInput').value = toISO(event.start);
+            document.getElementById('eventEndInput').value = toISO(event.end);
+        } else {
+            document.getElementById('eventId').value = '';
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventDesc').value = '';
+            document.getElementById('eventStartInput').value = toISO(start);
+            document.getElementById('eventEndInput').value = toISO(end);
+        }
+        eventModal.show();
+    }
+
+    function saveEvent() {
+        const id = document.getElementById('eventId').value;
+        const title = document.getElementById('eventTitle').value;
+        const catId = document.getElementById('eventCategory').value;
+        const locId = document.getElementById('eventLocation').value;
+        const desc = document.getElementById('eventDesc').value;
+        const start = document.getElementById('eventStartInput').value;
+        const end = document.getElementById('eventEndInput').value;
+        
+        const cat = appData.categories.find(c => c.id === catId);
+        const displayTitle = title.trim() || cat.name;
+        
+        const eventData = {
+            title: displayTitle, start: start, end: end, backgroundColor: cat.color,
+            extendedProps: { categoryId: catId, locationId: locId, description: desc }
+        };
+
+        if (id) {
+            const ev = calendar.getEventById(id);
+            ev.setProp('title', displayTitle);
+            ev.setProp('backgroundColor', cat.color);
+            ev.setDates(start, end);
+            ev.setExtendedProp('categoryId', catId);
+            ev.setExtendedProp('locationId', locId);
+            ev.setExtendedProp('description', desc);
+        } else {
+            calendar.addEvent({ id: Date.now().toString(), ...eventData });
+        }
+        saveData(); eventModal.hide();
+    }
+    function deleteCurrentEvent() { 
+        const id = document.getElementById('eventId').value; 
+        if(id) { calendar.getEventById(id).remove(); saveData(); eventModal.hide(); } 
+    }
+    
+    // Copy Paste
     function handleCopy() {
         if (!ctxMenuTargetEventId) return;
         const ev = calendar.getEventById(ctxMenuTargetEventId);
         if (ev) {
             clipboardEvent = {
-                title: ev.title,
-                duration: ev.end - ev.start,
+                title: ev.title, duration: ev.end - ev.start,
                 extendedProps: JSON.parse(JSON.stringify(ev.extendedProps))
             };
         }
         document.getElementById('context-menu').style.display = 'none';
     }
-
     function pasteToModal() {
-        if (!clipboardEvent) {
-            alert("剪贴板为空，请先右键复制一个事件。");
-            return;
-        }
-        
+        if (!clipboardEvent) return alert("剪贴板为空");
         document.getElementById('eventTitle').value = clipboardEvent.title;
         document.getElementById('eventCategory').value = clipboardEvent.extendedProps.categoryId;
+        document.getElementById('eventLocation').value = clipboardEvent.extendedProps.locationId || '';
+        document.getElementById('eventDesc').value = clipboardEvent.extendedProps.description || '';
+    }
+
+    // --- Managers (Category & Location) ---
+    const managerModal = new bootstrap.Modal(document.getElementById('managerModal'));
+    function openCategoryManager() { setupManager('category'); managerModal.show(); }
+    function openLocationManager() { setupManager('location'); managerModal.show(); }
+
+    function setupManager(type) {
+        document.getElementById('mgrType').value = type;
+        document.getElementById('managerTitle').textContent = type === 'category' ? '属性管理' : '位置管理';
+        document.getElementById('mgrEditId').value = '';
+        document.getElementById('mgrNameInput').value = '';
+        renderManagerList(type);
+        renderAllPalettes();
+    }
+
+    function renderManagerList(type) {
+        const list = document.getElementById('managerList'); list.innerHTML = '';
+        const items = type === 'category' ? appData.categories : appData.locations;
+        items.forEach(c => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `<span><span class="color-cell d-inline-block align-middle me-2" style="background:${c.color}; width:14px; height:14px;"></span>${c.name}</span> <i class="bi bi-pencil small text-muted cursor-pointer" onclick="editManagerItem('${type}', '${c.id}')"></i>`;
+            list.appendChild(li);
+        });
+    }
+
+    function editManagerItem(type, id) {
+        const items = type === 'category' ? appData.categories : appData.locations;
+        const item = items.find(i => i.id === id);
+        document.getElementById('mgrEditId').value = item.id;
+        document.getElementById('mgrNameInput').value = item.name;
+        document.getElementById('mgrColorInput').value = item.color;
+    }
+
+    function saveManagerItem() {
+        const type = document.getElementById('mgrType').value;
+        const id = document.getElementById('mgrEditId').value;
+        const name = document.getElementById('mgrNameInput').value;
+        const color = document.getElementById('mgrColorInput').value;
+        if(!name) return;
+
+        let items = type === 'category' ? appData.categories : appData.locations;
         
-        const startVal = document.getElementById('eventStartInput').value;
-        if(startVal) {
-            const startObj = new Date(startVal);
-            const endObj = new Date(startObj.getTime() + clipboardEvent.duration);
-            document.getElementById('eventEndInput').value = toISO(endObj);
+        if (id) {
+            const item = items.find(i => i.id === id);
+            if(item) { item.name = name; item.color = color; }
+        } else {
+            items.push({ id: type + '_' + Date.now(), name, color });
         }
+        
+        saveData();
+        renderManagerList(type);
+        if(type === 'category') reloadCalendar(); // Color update
+        document.getElementById('mgrNameInput').value = '';
     }
 
-    // --- Zoom & Row Height ---
-    function setZoomMode(mode) {
-        currentZoomMode = mode;
-        document.getElementById('zoom-fit').classList.toggle('active', mode === 'fit');
-        document.getElementById('zoom-normal').classList.toggle('active', mode === 'normal');
-        if (mode !== 'custom') {
-            document.getElementById('row-height-input').value = '';
-        }
-        applyZoom(mode);
+    // --- Export & Import ---
+    const exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
+    function openExportModal() {
+        document.getElementById('exportFilename').value = appData.lastExportConfig.filename;
+        document.getElementById('exportRangeType').value = appData.lastExportConfig.range;
+        toggleExportInputs();
+        exportModal.show();
     }
 
-    function handleRowHeightKey(event) {
-        if (event.key === 'Enter') {
-            const val = parseInt(event.target.value);
-            if (val > 0) {
-                currentZoomMode = 'custom';
-                document.getElementById('zoom-fit').classList.remove('active');
-                document.getElementById('zoom-normal').classList.remove('active');
-                applyZoom('custom', val);
+    function toggleExportInputs() {
+        const isCustom = document.getElementById('exportRangeType').value === 'custom';
+        document.getElementById('exportCustomInputs').style.display = isCustom ? 'block' : 'none';
+    }
+
+    function getExportData(rangeType) {
+        saveData();
+        let dataToExport = JSON.parse(JSON.stringify(appData));
+        
+        let start, end;
+        const now = new Date();
+        
+        if (rangeType === 'month') {
+            start = new Date(now.getFullYear(), now.getMonth(), 1);
+            end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+        } else if (rangeType === 'week') {
+            const day = now.getDay() || 7;
+            const s = new Date(now); s.setHours(0,0,0,0); s.setDate(s.getDate() - day + 1);
+            const e = new Date(s); e.setDate(e.getDate() + 6); e.setHours(23,59,59);
+            start = s; end = e;
+        } else if (rangeType === 'custom') {
+            start = new Date(document.getElementById('exportStart').value);
+            end = new Date(document.getElementById('exportEnd').value);
+            end.setHours(23,59,59);
+        }
+
+        if (rangeType !== 'all' && start && end) {
+            dataToExport.events = dataToExport.events.filter(ev => {
+                const evStart = new Date(ev.start);
+                return evStart >= start && evStart <= end;
+            });
+        }
+        return dataToExport;
+    }
+
+    function downloadJson(data, filename) {
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type : 'application/json'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${filename}.json`;
+        link.click();
+    }
+
+    function executeExport() {
+        const filename = document.getElementById('exportFilename').value || 'daily_profile';
+        const range = document.getElementById('exportRangeType').value;
+        
+        // Cache settings
+        appData.lastExportConfig = { filename, range };
+        saveData();
+
+        const data = getExportData(range);
+        downloadJson(data, filename);
+        exportModal.hide();
+    }
+
+    function quickSave() {
+        const conf = appData.lastExportConfig;
+        const data = getExportData(conf.range);
+        downloadJson(data, conf.filename);
+    }
+
+    function handleFileImport(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const imported = JSON.parse(e.target.result);
+                if (confirm("导入将覆盖现有数据，确定继续？")) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(imported));
+                    location.reload();
+                }
+            } catch (err) { alert("文件错误"); }
+        };
+        reader.readAsText(file);
+    }
+
+    // --- Analysis ---
+    function syncAnalysisDates() {
+        document.getElementById('customAnalysisRange').style.display = document.getElementById('analysisPreset').value === 'custom' ? 'flex' : 'none';
+        generateAnalysis();
+    }
+
+    function generateAnalysis() {
+        const preset = document.getElementById('analysisPreset').value;
+        const dim = document.querySelector('input[name="statsDim"]:checked').value; // 'category' or 'location'
+        let start, end;
+        
+        const now = new Date();
+        if(preset === 'week') {
+             const day = now.getDay() || 7;
+             start = new Date(now); start.setHours(0,0,0,0); start.setDate(start.getDate() - day + 1);
+             end = new Date(start); end.setDate(end.getDate() + 6); end.setHours(23,59,59);
+        } else if(preset === 'month') {
+             start = new Date(now.getFullYear(), now.getMonth(), 1);
+             end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+        } else if(preset === 'today') {
+             start = new Date(now); start.setHours(0,0,0,0);
+             end = new Date(now); end.setHours(23,59,59);
+        } else if (preset === 'custom') {
+             const sVal = document.getElementById('analysisStart').value;
+             const eVal = document.getElementById('analysisEnd').value;
+             if(!sVal || !eVal) return;
+             start = new Date(sVal); start.setHours(0,0,0,0);
+             end = new Date(eVal); end.setHours(23,59,59);
+        } else {
+             start = new Date(0); end = new Date(9999999999999);
+        }
+
+        const stats = {};
+        const items = dim === 'category' ? appData.categories : appData.locations;
+        items.forEach(i => stats[i.id] = 0);
+        let totalLogged = 0;
+
+        calendar.getEvents().forEach(e => {
+            if (e.display === 'background') return;
+            if (e.end <= start || e.start >= end) return;
+            
+            const s = e.start < start ? start : e.start;
+            const ed = e.end > end ? end : e.end;
+            const dur = ed - s;
+            
+            if (dur > 0) {
+                const key = dim === 'category' ? e.extendedProps.categoryId : e.extendedProps.locationId;
+                if(stats[key] !== undefined) {
+                    stats[key] += dur;
+                    totalLogged += dur;
+                }
+            }
+        });
+
+        const labels = [], data = [], colors = [];
+        items.forEach(i => {
+            if(stats[i.id] > 0) {
+                labels.push(i.name);
+                data.push((stats[i.id] / 3600000).toFixed(2));
+                colors.push(i.color);
+            }
+        });
+
+        let totalHours = totalLogged / 3600000;
+        
+        if(document.getElementById('baseTotal').checked && preset !== 'all') {
+            const cap = end - start;
+            const unallocated = cap - totalLogged;
+            if(unallocated > 0) {
+                labels.push('未记录');
+                data.push((unallocated / 3600000).toFixed(2));
+                colors.push('#eee');
+                totalHours = cap / 3600000;
             }
         }
-    }
 
-    function applyZoom(mode, customPx) {
-        let height = 30; 
-        if (mode === 'normal') height = 30; 
-        else if (mode === 'custom' && customPx) height = customPx;
-        else if (mode === 'fit') {
-            const container = document.getElementById('calendar-view');
-            const headerRow = container.querySelector('.fc-col-header');
-            const headerH = headerRow ? headerRow.clientHeight : 30;
-            const availableH = container.clientHeight - headerH - 2; 
-            height = availableH / 48; 
-            if(height < 10) height = 10;
-        }
-        document.documentElement.style.setProperty('--slot-height', height + 'px');
+        const ctx = document.getElementById('analysisChart').getContext('2d');
+        if(chartInstance) chartInstance.destroy();
         
-        document.body.offsetHeight; 
-        reloadCalendar(); 
-    }
-
-    // --- Other Modals & Logic ---
-    const timeRowModal = new bootstrap.Modal(document.getElementById('timeRowModal'));
-    function openTimeRowModal(timeKey) {
-        const config = appData.timeRowConfig[timeKey] || { text: '', color: '#000000', applyBg: false };
-        document.getElementById('timeRowKey').value = timeKey;
-        document.getElementById('timeRowText').value = config.text || ''; 
-        
-        document.getElementById('timeRowCustomColor').value = config.color || '#000000';
-        renderAllPalettes(); 
-
-        document.getElementById('timeRowApplyBg').checked = !!config.applyBg;
-        timeRowModal.show();
-    }
-    
-    function saveTimeRow() {
-        const key = document.getElementById('timeRowKey').value;
-        const text = document.getElementById('timeRowText').value;
-        const color = document.getElementById('timeRowCustomColor').value;
-        const applyBg = document.getElementById('timeRowApplyBg').checked;
-        pushHistory();
-        if (!text && !applyBg) delete appData.timeRowConfig[key];
-        else appData.timeRowConfig[key] = { text, color, applyBg };
-        saveData();
-        reloadCalendar(); 
-        timeRowModal.hide();
-    }
-    
-    function clearTimeRow() {
-        const key = document.getElementById('timeRowKey').value;
-        if(appData.timeRowConfig[key]) {
-            pushHistory();
-            delete appData.timeRowConfig[key];
-            saveData();
-            reloadCalendar(); 
-        }
-        timeRowModal.hide();
-    }
-    
-    function clearAllData() {
-        if(confirm('警告：此操作将永久删除所有数据且无法恢复！\n\n确定要清空吗？')) {
-            localStorage.removeItem(STORAGE_KEY);
-            appData = { weekOneDate: null, slogan: "", palette: [...DEFAULT_PALETTE], categories: [], events: [], dayNotes: {}, timeRowConfig: {} };
-            location.reload();
-        }
-    }
-
-    const dayNoteModal = new bootstrap.Modal(document.getElementById('dayNoteModal'));
-    function openDayNoteModal(dateStr) { document.getElementById('dayNoteDate').value = dateStr; document.getElementById('dayNoteTitle').textContent = `备注: ${dateStr}`; document.getElementById('dayNoteInput').value = appData.dayNotes[dateStr] || ''; dayNoteModal.show(); }
-    function saveDayNote() { pushHistory(); const dateStr = document.getElementById('dayNoteDate').value; const text = document.getElementById('dayNoteInput').value; if (text) appData.dayNotes[dateStr] = text; else delete appData.dayNotes[dateStr]; saveData(); calendar.render(); dayNoteModal.hide(); }
-
-    function renderAllPalettes() { 
-        ['paint-palette-grid', 'mgmt-palette-grid', 'edit-palette-grid', 'time-row-palette-grid'].forEach(gridId => { 
-            const container = document.getElementById(gridId); 
-            if(!container) return; 
-            container.innerHTML = ''; 
-            appData.palette.forEach(color => { 
-                const cell = document.createElement('div'); 
-                cell.className = 'color-cell'; 
-                cell.style.backgroundColor = color; 
-                
-                if (gridId === 'edit-palette-grid') { 
-                    cell.onclick = () => removeFromPalette(color); 
-                    cell.title = "Delete"; 
-                } else { 
-                    cell.onclick = () => { 
-                        if (gridId === 'paint-palette-grid') { 
-                            currentPaintColor = color; 
-                            document.getElementById('current-paint-preview').style.backgroundColor = color; 
-                        } else if (gridId === 'mgmt-palette-grid') { 
-                            document.getElementById('catColorInput').value = color; 
-                        } else if (gridId === 'time-row-palette-grid') {
-                            document.getElementById('timeRowCustomColor').value = color;
-                        }
-                    }; 
+        chartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels, datasets: [{ data, backgroundColor: colors }] },
+            options: { 
+                plugins: { 
+                    title: { display: true, text: `总计: ${totalHours.toFixed(1)}h` },
+                    legend: { position:'bottom' }
                 } 
-                container.appendChild(cell); 
-            }); 
-        }); 
+            }
+        });
+
+        // Table
+        let html = `<table class="table table-sm mt-3"><thead><tr><th>${dim === 'category' ? '属性' : '位置'}</th><th>小时</th><th>%</th></tr></thead><tbody>`;
+        labels.forEach((l, i) => {
+            const val = parseFloat(data[i]);
+            const pct = totalHours > 0 ? ((val/totalHours)*100).toFixed(1) : 0;
+            html += `<tr><td><span style="display:inline-block;width:10px;height:10px;background:${colors[i]};margin-right:5px"></span>${l}</td><td>${val}</td><td>${pct}%</td></tr>`;
+        });
+        html += `</tbody></table>`;
+        document.getElementById('stats-table').innerHTML = html;
     }
-    function addPaintEvent(start, end) { pushHistory(); calendar.addEvent({ id: 'bg_' + Date.now(), start: start, end: end, display: 'background', backgroundColor: currentPaintColor }); saveData(); }
-    function clearAllPaintOnPage() { if(!confirm("确定清除当前视图内的所有染色？")) return; pushHistory(); const currentView = calendar.view; const start = currentView.activeStart; const end = currentView.activeEnd; const eventsToRemove = calendar.getEvents().filter(e => { return e.display === 'background' && e.start < end && e.end > start; }); eventsToRemove.forEach(e => e.remove()); saveData(); }
 
-    const paletteModal = new bootstrap.Modal(document.getElementById('paletteModal'));
-    function openPaletteManager() { renderAllPalettes(); paletteModal.show(); }
-    function addToPalette() { const color = document.getElementById('newPaletteColor').value; if (!appData.palette.includes(color)) { pushHistory(); appData.palette.push(color); renderAllPalettes(); saveData(); } }
-    function removeFromPalette(color) { if (confirm('Delete color?')) { pushHistory(); appData.palette = appData.palette.filter(c => c !== color); renderAllPalettes(); saveData(); } }
-
-    const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
-    function toISO(date) { const offset = date.getTimezoneOffset() * 60000; return (new Date(date - offset)).toISOString().slice(0, 16); }
-    function openEventModal(event, start, end) { const isEdit = !!event; document.getElementById('btnDeleteEvent').style.display = isEdit ? 'block' : 'none'; if (isEdit) { document.getElementById('eventId').value = event.id; document.getElementById('eventTitle').value = event.title; document.getElementById('eventCategory').value = event.extendedProps.categoryId; document.getElementById('eventStartInput').value = toISO(event.start); document.getElementById('eventEndInput').value = toISO(event.end); } else { document.getElementById('eventId').value = ''; document.getElementById('eventTitle').value = ''; document.getElementById('eventCategory').value = appData.categories[0].id; document.getElementById('eventStartInput').value = toISO(start); document.getElementById('eventEndInput').value = toISO(end); } eventModal.show(); }
-    function saveEvent() { pushHistory(); const id = document.getElementById('eventId').value; const title = document.getElementById('eventTitle').value; const catId = document.getElementById('eventCategory').value; const start = document.getElementById('eventStartInput').value; const end = document.getElementById('eventEndInput').value; const cat = appData.categories.find(c => c.id === catId); const displayTitle = title.trim() || cat.name; if (id) { const ev = calendar.getEventById(id); ev.setProp('title', displayTitle); ev.setExtendedProp('categoryId', catId); ev.setDates(start, end); ev.setProp('backgroundColor', cat.color); } else { calendar.addEvent({ id: Date.now().toString(), title: displayTitle, start: start, end: end, backgroundColor: cat.color, extendedProps: { categoryId: catId } }); } saveData(); eventModal.hide(); }
-    function deleteCurrentEvent() { const id = document.getElementById('eventId').value; if(id) { pushHistory(); calendar.getEventById(id).remove(); saveData(); eventModal.hide(); } }
-
-    const categoryModal = new bootstrap.Modal(document.getElementById('categoryModal'));
-    function openCategoryManager() { document.getElementById('catEditId').value = ''; document.getElementById('catNameInput').value = ''; renderCategoryList(); renderAllPalettes(); categoryModal.show(); }
-    function saveCategory() { const id = document.getElementById('catEditId').value; const name = document.getElementById('catNameInput').value; const color = document.getElementById('catColorInput').value; if(!name) return; pushHistory(); if(id) { const c = appData.categories.find(c => c.id === id); if(c) { c.name = name; c.color = color; calendar.getEvents().forEach(ev => { if(ev.extendedProps.categoryId === id) ev.setProp('backgroundColor', color); }); } } else { appData.categories.push({ id: 'cat_'+Date.now(), name, color }); } renderCategoryList(); renderCategoryOptions(); saveData(); document.getElementById('catNameInput').value = ''; }
-    function renderCategoryList() { const ul = document.getElementById('categoryList'); ul.innerHTML = ''; appData.categories.forEach(c => { const li = document.createElement('li'); li.className = 'list-group-item d-flex justify-content-between align-items-center'; li.innerHTML = `<span><span class="color-cell d-inline-block align-middle me-2" style="background:${c.color}; width:14px; height:14px; cursor:default"></span>${c.name}</span> <i class="bi bi-pencil small text-muted cursor-pointer" onclick="editCategory('${c.id}')"></i>`; ul.appendChild(li); }); }
-    function editCategory(id) { const c = appData.categories.find(c => c.id === id); document.getElementById('catEditId').value = c.id; document.getElementById('catNameInput').value = c.name; document.getElementById('catColorInput').value = c.color; }
-    function renderCategoryOptions() { const s = document.getElementById('eventCategory'); s.innerHTML = ''; appData.categories.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; s.appendChild(o); }); }
-
-    function updateWeekBadge(view) { const badge = document.getElementById('current-week-badge'); if (appData.weekOneDate) { const start = new Date(appData.weekOneDate); const current = view.activeStart; const diff = current - start; const weekNum = Math.floor(diff / (1000*60*60*24*7)) + 1; badge.textContent = `Week ${weekNum}`; } else { badge.textContent = "Week ?"; } }
+    // --- Helpers ---
+    function hexToRgba(hex, alpha) {
+        let r = 0, g = 0, b = 0;
+        if (hex.length === 4) { r=parseInt(hex[1]+hex[1],16); g=parseInt(hex[2]+hex[2],16); b=parseInt(hex[3]+hex[3],16); }
+        else if (hex.length === 7) { r=parseInt(hex.substring(1,3),16); g=parseInt(hex.substring(3,5),16); b=parseInt(hex.substring(5,7),16); }
+        return `rgba(${r},${g},${b},${alpha})`;
+    }
+    
+    // Zoom / Misc
+    function setZoomMode(mode) {
+        document.getElementById('zoom-fit').classList.toggle('active', mode === 'fit');
+        document.getElementById('zoom-normal').classList.toggle('active', mode === 'normal');
+        if(mode !== 'custom') document.getElementById('row-height-input').value = '';
+        applyZoom(mode);
+    }
+    function handleRowHeightKey(e) { if(e.key === 'Enter') applyZoom('custom', parseInt(e.target.value)); }
+    function applyZoom(mode, customPx) {
+        let h = 30;
+        if (mode === 'custom') h = customPx || 30;
+        else if (mode === 'fit') {
+             const cont = document.getElementById('calendar-view');
+             const avail = cont.clientHeight - 40;
+             h = avail / 48; if(h < 10) h = 10;
+        }
+        document.documentElement.style.setProperty('--slot-height', h + 'px');
+        reloadCalendar();
+    }
+    
+    // Settings
     const settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'));
     function openSettings() { document.getElementById('weekOneDateInput').value = appData.weekOneDate || ''; settingsModal.show(); }
     function saveSettings() { appData.weekOneDate = document.getElementById('weekOneDateInput').value; saveData(); updateWeekBadge(calendar.view); settingsModal.hide(); }
+    function updateWeekBadge(view) {
+        const badge = document.getElementById('current-week-badge');
+        if (appData.weekOneDate) {
+            const start = new Date(appData.weekOneDate);
+            const diff = view.activeStart - start;
+            const weekNum = Math.floor(diff / (1000*60*60*24*7)) + 1;
+            badge.textContent = `W${weekNum}`;
+        } else { badge.textContent = "W?"; }
+    }
+    
+    // Paint
+    function addPaintEvent(start, end) { calendar.addEvent({ id: 'bg_' + Date.now(), start: start, end: end, display: 'background', backgroundColor: currentPaintColor }); saveData(); }
+    function clearAllPaintOnPage() { if(confirm("清除所有染色？")) { const v = calendar.view; const evs = calendar.getEvents().filter(e => e.display === 'background' && e.start < v.activeEnd && e.end > v.activeStart); evs.forEach(e => e.remove()); saveData(); } }
+    
+    // Time Row & Misc Modals
+    const timeRowModal = new bootstrap.Modal(document.getElementById('timeRowModal'));
+    function openTimeRowModal(key) { document.getElementById('timeRowKey').value = key; const c = appData.timeRowConfig[key] || {}; document.getElementById('timeRowText').value = c.text || ''; document.getElementById('timeRowCustomColor').value = c.color || '#000000'; document.getElementById('timeRowApplyBg').checked = !!c.applyBg; timeRowModal.show(); }
+    function saveTimeRow() { 
+        const k = document.getElementById('timeRowKey').value; 
+        const t = document.getElementById('timeRowText').value; 
+        const c = document.getElementById('timeRowCustomColor').value;
+        const bg = document.getElementById('timeRowApplyBg').checked;
+        if(!t && !bg) delete appData.timeRowConfig[k]; else appData.timeRowConfig[k] = { text:t, color:c, applyBg:bg };
+        saveData(); reloadCalendar(); timeRowModal.hide();
+    }
+    function clearTimeRow() { delete appData.timeRowConfig[document.getElementById('timeRowKey').value]; saveData(); reloadCalendar(); timeRowModal.hide(); }
 
-    const exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
-    function openExportModal() { exportModal.show(); }
-    function toggleExportInputs() { document.getElementById('exportCustomInputs').style.display = document.getElementById('exportRangeType').value === 'custom' ? 'block' : 'none'; }
-    function calculateRange(type) { const now = new Date(); let s, e; if (type === 'today') { s = new Date(now.setHours(0,0,0,0)); e = new Date(now.setHours(23,59,59,999)); } else if (type === 'week') { const day = now.getDay() || 7; if(day !== 1) now.setHours(-24 * (day - 1)); s = new Date(now.setHours(0,0,0,0)); e = new Date(s); e.setDate(e.getDate() + 6); e.setHours(23,59,59,999); } else if (type === 'month') { s = new Date(now.getFullYear(), now.getMonth(), 1); e = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59); } else if (type === 'custom') { const sVal = document.getElementById('exportStart').value; const eVal = document.getElementById('exportEnd').value; if(sVal && eVal) { s = new Date(sVal); e = new Date(eVal); e.setHours(23,59,59); } } return { start: s, end: e }; }
-    function executeExport() { saveData(); const type = document.getElementById('exportRangeType').value; let dataToExport = JSON.parse(JSON.stringify(appData)); if (type !== 'all') { const { start, end } = calculateRange(type); if (start && end) { dataToExport.events = dataToExport.events.filter(ev => { const evStart = new Date(ev.start); return evStart >= start && evStart <= end; }); } } const blob = new Blob([JSON.stringify(dataToExport, null, 2)], {type : 'application/json'}); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `daily_profile_${type}_${new Date().toISOString().slice(0,10)}.json`; link.click(); exportModal.hide(); }
-    function handleFileImport(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const importedData = JSON.parse(e.target.result); if (!importedData.events || !Array.isArray(importedData.events)) { throw new Error("文件格式不正确: 缺少 events 数组"); } if (confirm("导入将覆盖现有数据，确定继续？")) { pushHistory(); if(!importedData.palette) importedData.palette = [...DEFAULT_PALETTE]; if(!importedData.dayNotes) importedData.dayNotes = {}; if(!importedData.categories) importedData.categories = []; if(!importedData.timeRowConfig) importedData.timeRowConfig = {}; if(importedData.slogan === undefined) importedData.slogan = ""; localStorage.setItem(STORAGE_KEY, JSON.stringify(importedData)); alert("导入成功！"); location.reload(); } } catch (err) { alert("导入失败: " + err.message); } input.value = ''; }; reader.readAsText(file); }
-
-    function syncAnalysisDates() { const type = document.getElementById('analysisPreset').value; const sInput = document.getElementById('analysisStart'); const eInput = document.getElementById('analysisEnd'); if(type === 'custom') return; const { start, end } = calculateRange(type); if(start && end) { const sStr = start.getFullYear() + '-' + String(start.getMonth()+1).padStart(2, '0') + '-' + String(start.getDate()).padStart(2, '0'); const eStr = end.getFullYear() + '-' + String(end.getMonth()+1).padStart(2, '0') + '-' + String(end.getDate()).padStart(2, '0'); sInput.value = sStr; eInput.value = eStr; } }
-    function handleManualDateChange() { document.getElementById('analysisPreset').value = 'custom'; generateAnalysis(); }
-    function generateAnalysis() { const sVal = document.getElementById('analysisStart').value; const eVal = document.getElementById('analysisEnd').value; let start, end; if(!sVal || !eVal) { const type = document.getElementById('analysisPreset').value; if(type === 'all') { start = new Date(0); end = new Date(8640000000000000); } else { return; } } else { start = new Date(sVal); start.setHours(0,0,0,0); end = new Date(eVal); end.setHours(23,59,59,999); } const stats = {}; let totalLogged = 0; appData.categories.forEach(c => stats[c.id] = 0); calendar.getEvents().forEach(e => { if (e.display === 'background') return; if (e.end <= start || e.start >= end) return; const s = e.start < start ? start : e.start; const ed = e.end > end ? end : e.end; const dur = ed - s; if (dur > 0) { stats[e.extendedProps.categoryId] += dur; totalLogged += dur; } }); const labels = [], data = [], colors = []; appData.categories.forEach(c => { if(stats[c.id] > 0) { labels.push(c.name); data.push((stats[c.id] / 3600000).toFixed(2)); colors.push(c.color); } }); let totalHours = totalLogged / 3600000; if(document.getElementById('baseTotal').checked) { const cap = end - start; const unallocated = cap - totalLogged; if(unallocated > 0) { labels.push('未记录'); data.push((unallocated / 3600000).toFixed(2)); colors.push('#eee'); totalHours = cap / 3600000; } } const ctx = document.getElementById('analysisChart').getContext('2d'); if(chartInstance) chartInstance.destroy(); chartInstance = new Chart(ctx, { type: 'doughnut', data: { labels, datasets: [{ data, backgroundColor: colors }] }, options: { plugins: { title: { display: true, text: `总计: ${totalHours.toFixed(1)}h` }, legend: { position:'bottom' } } } }); let html = `<table class="table table-sm mt-3"><thead><tr><th>Category</th><th>Hours</th><th>%</th></tr></thead><tbody>`; labels.forEach((l, i) => { const val = parseFloat(data[i]); const pct = totalHours > 0 ? ((val/totalHours)*100).toFixed(1) : 0; html += `<tr><td><span style="display:inline-block;width:10px;height:10px;background:${colors[i]};margin-right:5px"></span>${l}</td><td>${val}</td><td>${pct}%</td></tr>`; }); html += `</tbody></table>`; document.getElementById('stats-table').innerHTML = html; }
+    // Palette Manager
+    const paletteModal = new bootstrap.Modal(document.getElementById('paletteModal'));
+    function openPaletteManager() { renderAllPalettes(); paletteModal.show(); }
+    function addToPalette() { const c = document.getElementById('newPaletteColor').value; if(!appData.palette.includes(c)) { appData.palette.push(c); renderAllPalettes(); saveData(); } }
+    function renderAllPalettes() {
+        ['paint-palette-grid', 'mgr-palette-grid', 'edit-palette-grid'].forEach(id => {
+            const el = document.getElementById(id); if(!el) return; el.innerHTML = '';
+            appData.palette.forEach(c => {
+                const d = document.createElement('div'); d.className = 'color-cell'; d.style.background = c;
+                d.onclick = () => {
+                    if(id === 'paint-palette-grid') { currentPaintColor = c; document.getElementById('current-paint-preview').style.background = c; }
+                    else if(id === 'mgr-palette-grid') document.getElementById('mgrColorInput').value = c;
+                    else if(id === 'edit-palette-grid') { if(confirm('Delete?')) { appData.palette = appData.palette.filter(x => x!==c); renderAllPalettes(); saveData(); } }
+                };
+                el.appendChild(d);
+            });
+        });
+    }
 </script>
 </body>
 </html>
