@@ -703,7 +703,7 @@
                 const date = args.date;
                 const offset = date.getTimezoneOffset() * 60000;
                 const localDateStr = new Date(date.getTime() - offset).toISOString().split('T')[0];
-                const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
                 const text = `${date.getMonth() + 1}/${date.getDate()} ${weekdays[date.getDay()]}`;
                 
                 const note = appData.dayNotes[localDateStr] || "";
@@ -1153,8 +1153,8 @@
             const start = new Date(appData.weekOneDate);
             const diff = view.activeStart - start;
             const weekNum = Math.floor(diff / (1000*60*60*24*7)) + 1;
-            badge.textContent = `W${weekNum}`;
-        } else { badge.textContent = "W?"; }
+            badge.textContent = `Week${weekNum}`;
+        } else { badge.textContent = "Week?"; }
     }
     
     // Paint
