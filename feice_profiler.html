@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feice Profiler Pro</title>
+    <title>Feice Profiler</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -956,17 +956,39 @@
             const e = new Date(s); e.setDate(e.getDate() + 6); e.setHours(23,59,59);
             start = s; end = e;
         } else if (rangeType === 'custom') {
-            start = new Date(document.getElementById('exportStart').value);
-            end = new Date(document.getElementById('exportEnd').value);
-            end.setHours(23,59,59);
+            const sVal = document.getElementById('exportStart').value;
+            const eVal = document.getElementById('exportEnd').value;
+            if (sVal && eVal) {
+                start = new Date(sVal);
+                end = new Date(eVal);
+                end.setHours(23,59,59);
+            }
         }
 
-        if (rangeType !== 'all' && start && end) {
+        // Only filter if we have valid dates
+        if (rangeType !== 'all' && start && !isNaN(start.getTime()) && end && !isNaN(end.getTime())) {
             dataToExport.events = dataToExport.events.filter(ev => {
                 const evStart = new Date(ev.start);
                 return evStart >= start && evStart <= end;
             });
         }
+        
+        // Convert to Beijing Time (+08:00) for JSON output
+        const toBJ = (d) => {
+             if(!d) return null;
+             const dt = new Date(d);
+             if (isNaN(dt.getTime())) return d;
+             const bjMs = dt.getTime() + (8 * 60 * 60 * 1000);
+             return new Date(bjMs).toISOString().replace('Z', '+08:00');
+        };
+        
+        if(dataToExport.events) {
+            dataToExport.events.forEach(ev => {
+                if(ev.start) ev.start = toBJ(ev.start);
+                if(ev.end) ev.end = toBJ(ev.end);
+            });
+        }
+
         return dataToExport;
     }
 
