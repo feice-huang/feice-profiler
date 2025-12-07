@@ -146,6 +146,14 @@
         .btn-icon-tool:hover { background: #f5f5f5; }
         .btn-icon-tool:disabled { color: #ccc; cursor: default; }
 
+        /* Category/Location Buttons */
+        #eventCategoryButtons .btn.active,
+        #eventLocationButtons .btn.active {
+            background-color: #1967d2;
+            color: white;
+            border-color: #1967d2;
+        }
+
         /* Paint Tools */
         .paint-wrapper { display: flex; align-items: center; gap: 4px; }
         .paint-dropdown-toggle {
@@ -382,10 +390,12 @@
                     <div class="row mb-2">
                         <div class="col-6">
                             <label class="form-label small text-muted mb-1">属性 (Category)</label>
+                            <div class="d-flex gap-1 mb-1" id="eventCategoryButtons"></div>
                             <select class="form-select form-select-sm" id="eventCategory"></select>
                         </div>
                         <div class="col-6">
                             <label class="form-label small text-muted mb-1">位置 (Location)</label>
+                            <div class="d-flex gap-1 mb-1" id="eventLocationButtons"></div>
                             <select class="form-select form-select-sm" id="eventLocation"></select>
                         </div>
                     </div>
@@ -417,7 +427,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="timeRowModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content"><div class="modal-header py-2"><h6 class="modal-title">时间轴设置</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="timeRowKey"><label class="small text-muted mb-1">文字</label><input type="text" class="form-control mb-2" id="timeRowText"><label class="small text-muted mb-1">颜色</label><input type="color" class="form-control form-control-color mb-3 w-100" id="timeRowCustomColor"><div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="timeRowApplyBg"><label class="form-check-label small" for="timeRowApplyBg">应用为背景行</label></div><div class="d-flex gap-2"><button class="btn btn-outline-secondary btn-sm w-50" onclick="clearTimeRow()">重置</button><button class="btn btn-primary btn-sm w-50" onclick="saveTimeRow()">保存</button></div></div></div></div></div>
+<div class="modal fade" id="timeRowModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content"><div class="modal-header py-2"><h6 class="modal-title">时间轴设置</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="timeRowKey"><label class="small text-muted mb-1">文字</label><input type="text" class="form-control mb-2" id="timeRowText"><label class="small text-muted mb-1">颜色</label><div class="dropdown mb-2"><button class="btn btn-sm btn-outline-secondary w-100 d-flex justify-content-between align-items-center" type="button" id="timeRowColorBtn" data-bs-toggle="dropdown"><span id="timeRowColorPreview" style="display:inline-block;width:20px;height:20px;background:#000000;border:1px solid #ddd;border-radius:3px;"></span><span id="timeRowColorText">选择颜色</span><i class="bi bi-chevron-down"></i></button><ul class="dropdown-menu p-2" style="min-width:250px;"><li class="mb-2"><div class="color-grid" id="timeRowPaletteGrid" style="width:100%;"></div></li><li class="border-top pt-2"><div class="input-group input-group-sm"><input type="text" class="form-control" id="timeRowColorHex" placeholder="#000000" pattern="#[0-9A-Fa-f]{6}"><button class="btn btn-outline-secondary" type="button" onclick="applyTimeRowColorHex()">应用</button></div></li></ul></div><div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="timeRowApplyBg"><label class="form-check-label small" for="timeRowApplyBg">应用为背景行</label></div><div class="d-flex gap-2"><button class="btn btn-outline-secondary btn-sm w-50" onclick="clearTimeRow()">重置</button><button class="btn btn-primary btn-sm w-50" onclick="saveTimeRow()">保存</button></div></div></div></div></div>
 
 <div class="modal fade" id="exportModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content"><div class="modal-header"><h6 class="modal-title">导出/保存</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">
     <label class="small text-muted mb-1">文件名 (无后缀)</label>
@@ -441,7 +451,7 @@
     
     // Core Data Structure
     let appData = { 
-        weekOneDate: null, 
+        weekOneDate: '2025-09-08', 
         slogan: "", 
         palette: [...DEFAULT_PALETTE], 
         categories: [
@@ -584,6 +594,10 @@
                 ];
             }
             if(!appData.dayLongNotes) appData.dayLongNotes = {};
+            if(!appData.weekOneDate) appData.weekOneDate = '2025-09-08';
+        } else {
+            // 首次加载，设置默认值
+            appData.weekOneDate = '2025-09-08';
         }
     }
 
@@ -787,10 +801,85 @@
         const sel = document.getElementById(id); sel.innerHTML = '';
         items.forEach(i => { const opt = document.createElement('option'); opt.value = i.id; opt.textContent = i.name; sel.appendChild(opt); });
     }
+    
+    function renderCategoryButtons() {
+        const container = document.getElementById('eventCategoryButtons');
+        container.innerHTML = '';
+        // 显示前3个常用选项作为一级按钮
+        const commonCats = appData.categories.slice(0, 3);
+        commonCats.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-sm btn-outline-secondary flex-fill';
+            btn.style.fontSize = '0.75rem';
+            btn.dataset.catId = cat.id;
+            btn.innerHTML = `<span style="display:inline-block;width:8px;height:8px;background:${cat.color};border-radius:2px;margin-right:4px;"></span>${cat.name}`;
+            btn.onclick = () => {
+                document.getElementById('eventCategory').value = cat.id;
+                // 更新按钮状态
+                container.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            };
+            container.appendChild(btn);
+        });
+    }
+    
+    function renderLocationButtons() {
+        const container = document.getElementById('eventLocationButtons');
+        container.innerHTML = '';
+        // 显示前3个常用选项作为一级按钮
+        const commonLocs = appData.locations.slice(0, 3);
+        commonLocs.forEach(loc => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-sm btn-outline-secondary flex-fill';
+            btn.style.fontSize = '0.75rem';
+            btn.dataset.locId = loc.id;
+            btn.innerHTML = `<span style="display:inline-block;width:8px;height:8px;background:${loc.color};border-radius:2px;margin-right:4px;"></span>${loc.name}`;
+            btn.onclick = () => {
+                document.getElementById('eventLocation').value = loc.id;
+                // 更新按钮状态
+                container.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            };
+            container.appendChild(btn);
+        });
+    }
+    
+    function updateButtonStates(catId, locId) {
+        updateCategoryButtonState(catId);
+        updateLocationButtonState(locId);
+    }
+    
+    function updateCategoryButtonState(catId) {
+        const container = document.getElementById('eventCategoryButtons');
+        container.querySelectorAll('button').forEach(btn => {
+            const btnCatId = btn.dataset.catId;
+            if (btnCatId === catId) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+    
+    function updateLocationButtonState(locId) {
+        const container = document.getElementById('eventLocationButtons');
+        container.querySelectorAll('button').forEach(btn => {
+            const btnLocId = btn.dataset.locId;
+            if (btnLocId === locId) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
 
     function openEventModal(event, start, end) {
         populateSelect('eventCategory', appData.categories);
         populateSelect('eventLocation', appData.locations);
+        renderCategoryButtons();
+        renderLocationButtons();
 
         const isEdit = !!event;
         document.getElementById('btnDeleteEvent').style.display = isEdit ? 'block' : 'none';
@@ -798,18 +887,43 @@
         if (isEdit) {
             document.getElementById('eventId').value = event.id;
             document.getElementById('eventTitle').value = event.title;
-            document.getElementById('eventCategory').value = event.extendedProps.categoryId || appData.categories[0].id;
-            document.getElementById('eventLocation').value = event.extendedProps.locationId || appData.locations[0].id;
+            const catId = event.extendedProps.categoryId || appData.categories[0].id;
+            const locId = event.extendedProps.locationId || appData.locations[0].id;
+            document.getElementById('eventCategory').value = catId;
+            document.getElementById('eventLocation').value = locId;
             document.getElementById('eventDesc').value = event.extendedProps.description || '';
             document.getElementById('eventStartInput').value = toISO(event.start);
             document.getElementById('eventEndInput').value = toISO(event.end);
+            // 更新按钮状态
+            updateButtonStates(catId, locId);
         } else {
             document.getElementById('eventId').value = '';
             document.getElementById('eventTitle').value = '';
             document.getElementById('eventDesc').value = '';
             document.getElementById('eventStartInput').value = toISO(start);
             document.getElementById('eventEndInput').value = toISO(end);
+            // 重置按钮状态
+            document.getElementById('eventCategoryButtons').querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            document.getElementById('eventLocationButtons').querySelectorAll('button').forEach(b => b.classList.remove('active'));
         }
+        
+        // 添加回车键监听，自动保存
+        const titleInput = document.getElementById('eventTitle');
+        titleInput.onkeydown = function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                saveEvent();
+            }
+        };
+        
+        // 监听下拉菜单变化，同步按钮状态
+        document.getElementById('eventCategory').addEventListener('change', function() {
+            updateCategoryButtonState(this.value);
+        });
+        document.getElementById('eventLocation').addEventListener('change', function() {
+            updateLocationButtonState(this.value);
+        });
+        
         eventModal.show();
     }
 
@@ -1014,9 +1128,28 @@
     }
 
     function quickSave() {
-        const conf = appData.lastExportConfig;
-        const data = getExportData(conf.range);
-        downloadJson(data, conf.filename);
+        // 快速保存改为保存全部时间信息，直接下载
+        saveData();
+        const dataToExport = JSON.parse(JSON.stringify(appData));
+        
+        // Convert to Beijing Time (+08:00) for JSON output
+        const toBJ = (d) => {
+             if(!d) return null;
+             const dt = new Date(d);
+             if (isNaN(dt.getTime())) return d;
+             const bjMs = dt.getTime() + (8 * 60 * 60 * 1000);
+             return new Date(bjMs).toISOString().replace('Z', '+08:00');
+        };
+        
+        if(dataToExport.events) {
+            dataToExport.events.forEach(ev => {
+                if(ev.start) ev.start = toBJ(ev.start);
+                if(ev.end) ev.end = toBJ(ev.end);
+            });
+        }
+        
+        const filename = appData.lastExportConfig.filename || 'daily_profile';
+        downloadJson(dataToExport, filename);
     }
 
     function handleFileImport(input) {
@@ -1185,12 +1318,50 @@
     
     // Time Row & Misc Modals
     const timeRowModal = new bootstrap.Modal(document.getElementById('timeRowModal'));
-    function openTimeRowModal(key) { document.getElementById('timeRowKey').value = key; const c = appData.timeRowConfig[key] || {}; document.getElementById('timeRowText').value = c.text || ''; document.getElementById('timeRowCustomColor').value = c.color || '#000000'; document.getElementById('timeRowApplyBg').checked = !!c.applyBg; timeRowModal.show(); }
+    let currentTimeRowColor = '#000000';
+    function openTimeRowModal(key) { 
+        document.getElementById('timeRowKey').value = key; 
+        const c = appData.timeRowConfig[key] || {}; 
+        document.getElementById('timeRowText').value = c.text || ''; 
+        currentTimeRowColor = c.color || '#000000';
+        updateTimeRowColorUI(currentTimeRowColor);
+        document.getElementById('timeRowApplyBg').checked = !!c.applyBg; 
+        renderTimeRowPalette();
+        timeRowModal.show(); 
+    }
+    function renderTimeRowPalette() {
+        const grid = document.getElementById('timeRowPaletteGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        appData.palette.forEach(c => {
+            const d = document.createElement('div');
+            d.className = 'color-cell';
+            d.style.background = c;
+            d.onclick = () => {
+                currentTimeRowColor = c;
+                updateTimeRowColorUI(c);
+            };
+            grid.appendChild(d);
+        });
+    }
+    function updateTimeRowColorUI(color) {
+        currentTimeRowColor = color;
+        document.getElementById('timeRowColorPreview').style.background = color;
+        document.getElementById('timeRowColorText').textContent = color.toUpperCase();
+        document.getElementById('timeRowColorHex').value = color;
+    }
+    function applyTimeRowColorHex() {
+        const hex = document.getElementById('timeRowColorHex').value;
+        if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+            currentTimeRowColor = hex;
+            updateTimeRowColorUI(hex);
+        }
+    }
     function saveTimeRow() { 
         pushHistory();
         const k = document.getElementById('timeRowKey').value; 
         const t = document.getElementById('timeRowText').value; 
-        const c = document.getElementById('timeRowCustomColor').value;
+        const c = currentTimeRowColor;
         const bg = document.getElementById('timeRowApplyBg').checked;
         if(!t && !bg) delete appData.timeRowConfig[k]; else appData.timeRowConfig[k] = { text:t, color:c, applyBg:bg };
         saveData(); reloadCalendar(); timeRowModal.hide();
