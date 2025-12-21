@@ -240,6 +240,22 @@
         .location-indicator {
             position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
         }
+
+
+        /* Duration Input Group */
+        .duration-input-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .duration-input-group input {
+            flex: 1;
+        }
+        .duration-btn {
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            min-width: 32px;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;"> 
@@ -314,6 +330,7 @@
             
             <button class="btn-text" onclick="quickSave()">快速保存</button>
             <button class="btn-text" onclick="openExportModal()">导出</button>
+            <button class="btn-text tool-group-calendar" onclick="exportToPNG()" title="导出为PNG">PNG</button>
             <button class="btn-text btn-text-danger" onclick="clearAllData()">清空</button>
         </div>
     </div>
@@ -402,11 +419,19 @@
                     <div class="row mb-2">
                         <div class="col-6">
                             <label class="form-label small text-muted mb-1">开始</label>
-                            <input type="datetime-local" class="form-control form-control-sm" id="eventStartInput">
+                            <input type="datetime-local" class="form-control form-control-sm" id="eventStartInput" onchange="handleStartTimeChange()">
                         </div>
                         <div class="col-6">
                             <label class="form-label small text-muted mb-1">结束</label>
-                            <input type="datetime-local" class="form-control form-control-sm" id="eventEndInput">
+                            <input type="datetime-local" class="form-control form-control-sm" id="eventEndInput" onchange="handleEndTimeChange()">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small text-muted mb-1">持续时间</label>
+                        <div class="duration-input-group">
+                            <input type="text" class="form-control form-control-sm" id="eventDurationInput" readonly>
+                            <button type="button" class="btn btn-sm btn-outline-secondary duration-btn" onclick="adjustDuration(-15)">-</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary duration-btn" onclick="adjustDuration(15)">+</button>
                         </div>
                     </div>
                     <div class="mb-2">
@@ -443,6 +468,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
     // --- Data & State ---
@@ -892,20 +918,33 @@
             document.getElementById('eventCategory').value = catId;
             document.getElementById('eventLocation').value = locId;
             document.getElementById('eventDesc').value = event.extendedProps.description || '';
-            document.getElementById('eventStartInput').value = toISO(event.start);
-            document.getElementById('eventEndInput').value = toISO(event.end);
+            const startISO = toISO(event.start);
+            const endISO = toISO(event.end);
+            document.getElementById('eventStartInput').value = startISO;
+            document.getElementById('eventEndInput').value = endISO;
+            // 保存旧值用于持续时间计算
+            document.getElementById('eventStartInput').dataset.oldValue = startISO;
+            document.getElementById('eventEndInput').dataset.oldValue = endISO;
             // 更新按钮状态
             updateButtonStates(catId, locId);
         } else {
             document.getElementById('eventId').value = '';
             document.getElementById('eventTitle').value = '';
             document.getElementById('eventDesc').value = '';
-            document.getElementById('eventStartInput').value = toISO(start);
-            document.getElementById('eventEndInput').value = toISO(end);
+            const startISO = toISO(start);
+            const endISO = toISO(end);
+            document.getElementById('eventStartInput').value = startISO;
+            document.getElementById('eventEndInput').value = endISO;
+            // 保存旧值用于持续时间计算
+            document.getElementById('eventStartInput').dataset.oldValue = startISO;
+            document.getElementById('eventEndInput').dataset.oldValue = endISO;
             // 重置按钮状态
             document.getElementById('eventCategoryButtons').querySelectorAll('button').forEach(b => b.classList.remove('active'));
             document.getElementById('eventLocationButtons').querySelectorAll('button').forEach(b => b.classList.remove('active'));
         }
+        
+        // 更新持续时间显示
+        updateDurationDisplay();
         
         // 添加回车键监听，自动保存
         const titleInput = document.getElementById('eventTitle');
@@ -1385,6 +1424,157 @@
                 el.appendChild(d);
             });
         });
+    }
+
+
+    // --- Duration Management ---
+    function updateDurationDisplay() {
+        const startInput = document.getElementById('eventStartInput');
+        const endInput = document.getElementById('eventEndInput');
+        const durationInput = document.getElementById('eventDurationInput');
+        
+        if (!startInput.value || !endInput.value) {
+            durationInput.value = '';
+            return;
+        }
+        
+        const start = new Date(startInput.value);
+        const end = new Date(endInput.value);
+        const durationMs = end - start;
+        
+        if (durationMs < 0) {
+            durationInput.value = '无效';
+            return;
+        }
+        
+        const hours = Math.floor(durationMs / 3600000);
+        const minutes = Math.floor((durationMs % 3600000) / 60000);
+        
+        if (hours > 0) {
+            durationInput.value = `${hours}小时${minutes}分钟`;
+        } else {
+            durationInput.value = `${minutes}分钟`;
+        }
+    }
+    
+    function handleStartTimeChange() {
+        const startInput = document.getElementById('eventStartInput');
+        const endInput = document.getElementById('eventEndInput');
+        
+        if (!startInput.value) {
+            updateDurationDisplay();
+            return;
+        }
+        
+        const start = new Date(startInput.value);
+        
+        // 如果有旧的开始时间，保持持续时间不变
+        if (startInput.dataset.oldValue && endInput.value) {
+            const oldStart = new Date(startInput.dataset.oldValue);
+            const oldEnd = new Date(endInput.value);
+            const duration = oldEnd - oldStart;
+            
+            // 保持持续时间不变，修改结束时间
+            const newEnd = new Date(start.getTime() + duration);
+            endInput.value = toISO(newEnd);
+        } else if (!endInput.value) {
+            // 如果没有结束时间，设置默认30分钟
+            const defaultEnd = new Date(start.getTime() + 30 * 60000);
+            endInput.value = toISO(defaultEnd);
+        }
+        
+        // 保存当前值作为下次的旧值
+        startInput.dataset.oldValue = startInput.value;
+        if (endInput.value) {
+            endInput.dataset.oldValue = endInput.value;
+        }
+        
+        updateDurationDisplay();
+    }
+    
+    function handleEndTimeChange() {
+        const startInput = document.getElementById('eventStartInput');
+        const endInput = document.getElementById('eventEndInput');
+        
+        if (!startInput.value || !endInput.value) {
+            updateDurationDisplay();
+            return;
+        }
+        
+        // 保存当前值作为下次的旧值
+        startInput.dataset.oldValue = startInput.value;
+        endInput.dataset.oldValue = endInput.value;
+        
+        updateDurationDisplay();
+    }
+    
+    function adjustDuration(minutes) {
+        const startInput = document.getElementById('eventStartInput');
+        const endInput = document.getElementById('eventEndInput');
+        
+        if (!startInput.value) return;
+        
+        const start = new Date(startInput.value);
+        let end = endInput.value ? new Date(endInput.value) : new Date(start.getTime() + 30 * 60000);
+        
+        // 调整结束时间
+        end = new Date(end.getTime() + minutes * 60000);
+        
+        // 确保结束时间不早于开始时间
+        if (end <= start) {
+            end = new Date(start.getTime() + 15 * 60000);
+        }
+        
+        endInput.value = toISO(end);
+        
+        // 保存当前值作为下次的旧值（用于开始时间改变时保持持续时间）
+        startInput.dataset.oldValue = startInput.value;
+        endInput.dataset.oldValue = endInput.value;
+        
+        updateDurationDisplay();
+    }
+
+    // --- PNG Export ---
+    function exportToPNG() {
+        if (document.getElementById('calendar-view').style.display === 'none') {
+            alert('请在日历视图下导出');
+            return;
+        }
+        
+        const calendarEl = document.getElementById('calendar');
+        
+        // 等待一小段时间确保UI更新
+        setTimeout(() => {
+            if (typeof html2canvas !== 'undefined') {
+                html2canvas(calendarEl, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    windowWidth: calendarEl.scrollWidth,
+                    windowHeight: calendarEl.scrollHeight
+                }).then(canvas => {
+                    // 创建下载链接
+                    canvas.toBlob(function(blob) {
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        const date = new Date();
+                        const dateStr = date.toISOString().split('T')[0];
+                        link.download = `calendar_${dateStr}.png`;
+                        link.click();
+                        URL.revokeObjectURL(url);
+                    });
+                }).catch(err => {
+                    trackerIndicator.style.display = trackerDisplay;
+                    console.error('导出失败:', err);
+                    alert('导出失败，请重试');
+                });
+            } else {
+                trackerIndicator.style.display = trackerDisplay;
+                alert('导出功能加载中，请稍后再试');
+            }
+        }, 100);
     }
 </script>
 </body>
